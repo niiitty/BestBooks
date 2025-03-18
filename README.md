@@ -1,5 +1,5 @@
 # BestBooks
-Nettisivu-projekti kurssille Tietokannat ja web-ohjelmointi.
+Nettisivuprojekti kurssille Tietokannat ja web-ohjelmointi.
 # Ominaisuudet
 <ul>
   <li>Sovelluksessa käyttäjät pystyvät lisäämään "kirjahyllyynsä" kirjoja, joita on lukenut tai haluaa lukea. Kirjasta löytyy perustiedot kuten nimi, julkaisuvuosi ja laji.</li>
