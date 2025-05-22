@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Add book to shelf</title>
+</head>
+
+<body>
+  <h1>Search for a Book</h1>
+  <form method="post">
+    <input type="text" name="query" value="{{ query }}">
+    <input type="submit" value="Search">
+  </form>
+
+  {% if query %}
+    <h2>Results for "{{ query }}":</h2>
+    {% if suggestions %}
+      <p>Did you mean:</p>
+      <ul>
+        {% for book in suggestions %}
+         <li>{{ book }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No suggestions found.</p>
+    {% endif %}
+  {% endif %}
+
+  Can't find your book? Add it to the database!
+  <form method="post">
+    <input type="text" name="title">
+    <input type="submit" value="Add to database">
+  </form>
+</body>
+
+</html>

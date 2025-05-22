@@ -6,7 +6,14 @@ CREATE TABLE users (
 
 CREATE TABLE books (
     book_id INTEGER PRIMARY KEY,
-    name TEXT UNIQUE
+    title TEXT UNIQUE
+);
+
+CREATE TABLE book_attributes (
+    id INTEGER PRIMARY KEY,
+    book_id INTEGER REFERENCES books,
+    attribute_key TEXT,
+    attribute_value TEXT
 );
 
 CREATE TABLE reviews (
