@@ -1,11 +1,11 @@
 CREATE TABLE users (
-    id INTEGER PRIMARY KEY, 
+    user_id INTEGER PRIMARY KEY, 
     username TEXT UNIQUE,
     password_hash TEXT
 );
 
 CREATE TABLE books (
-    id INTEGER PRIMARY KEY,
+    book_id INTEGER PRIMARY KEY,
     name TEXT UNIQUE
 );
 

@@ -8,9 +8,18 @@
 <body>
   <h1>This is the front page</h1>
 
+  {% if not session.username %}
   <form action="/register">
     <input type="submit" value="Make an account" />
   </form>
+  <form action="/login">
+    <input type="submit" value="Log in" />
+  </form>
+  {% else %}
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
+  {% endif %}
 </body>
 
 </html>
