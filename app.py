@@ -46,8 +46,11 @@ def logging_in():
     username = request.form["username"]
     password = request.form["password"]
 
-    sql = "SELECT password_hash FROM users WHERE username = ?"
-    password_hash = db.query(sql, [username])[0][0]
+    try:
+        sql = "SELECT password_hash FROM users WHERE username = ?"
+        password_hash = db.query(sql, [username])[0][0]
+    except IndexError:
+        return "User does not exist"
 
     if check_password_hash(password_hash, password):
         session["username"] = username
@@ -64,14 +67,14 @@ def logout():
 
 def get_candidates(query):
     """Searches for books in the database with similar titles."""
-    tokens = query.split()
+    tokens = set(query)
     pattern_clauses = ["title LIKE ?"] * len(tokens)
     values = [f"%{token}%" for token in tokens]
 
     sql = f"""
     SELECT title FROM books
-    WHERE {' OR '.join(pattern_clauses)}
-    LIMIT 200
+    WHERE {" OR ".join(pattern_clauses)}
+    LIMIT 100
     """
     results = db.query(sql, values)
     return results
@@ -83,7 +86,8 @@ def add_to_shelf():
     if request.method == "POST":
         query = request.form["query"]
         candidates = get_candidates(query)
-        suggestions = get_close_matches(query, candidates, n=5, cutoff=0.4)
+        candidates = [c["title"] for c in candidates]
+        suggestions = get_close_matches(query, candidates, n=5, cutoff=0.3)
 
     return render_template("add_to_shelf.html", query=query, suggestions=suggestions)
 
@@ -94,7 +98,7 @@ def add_book():
 @app.route("/add_book/upload", methods=["POST"])
 def upload():
     title = request.form["title"]
-    author = request.form.get("author")
+    author = request.form["author"]
     publication_date = request.form.get("publication_date")
     genres = request.form.getlist("genres")
 
@@ -104,8 +108,10 @@ def upload():
 
     sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, ?, ?)"
 
-    db.execute(sql, (book_id, "author", author))
-    db.execute(sql, (book_id, "publication_date", publication_date))
+    if author:
+        db.execute(sql, (book_id, "author", author))
+    if publication_date:
+        db.execute(sql, (book_id, "publication_date", publication_date))
 
     for genre in genres:
         db.execute(sql, (book_id, "genre", genre))

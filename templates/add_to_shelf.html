@@ -8,7 +8,7 @@
 <body>
   <h1>Search for a Book</h1>
   <form method="post">
-    <input type="text" name="query" value="{{ query }}">
+    <input type="text" name="query" value="{{ query }}" required>
     <input type="submit" value="Search">
   </form>
 
@@ -27,8 +27,7 @@
   {% endif %}
 
   Can't find your book? Add it to the database!
-  <form method="post">
-    <input type="text" name="title">
+  <form action="/add_book">
     <input type="submit" value="Add to database">
   </form>
 </body>
