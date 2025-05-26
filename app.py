@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, request, session, redirect, url_for
+from flask import render_template, request, session, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from difflib import get_close_matches
 
@@ -22,20 +22,24 @@ def register():
 
 @app.route("/create_account", methods=["POST"])
 def create_account():
+    error = None
     username = request.form["username"]
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
-        redirect(url_for("register"))
+        error = "Passwords must match"
+        return render_template("register.html", error=error)
     password_hash = generate_password_hash(password1)
 
     try:
         sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
         db.execute(sql, [username, password_hash])
     except sqlite3.IntegrityError:
-        return "ERROR: username taken"
+        error = "Username taken"
+        return render_template("register.html", error=error)
 
-    return "Account created"
+    flash("Account created")
+    return redirect(url_for("index"))
 
 @app.route("/login")
 def login():
@@ -43,6 +47,7 @@ def login():
 
 @app.route("/logging_in", methods=["POST"])
 def logging_in():
+    error = None
     username = request.form["username"]
     password = request.form["password"]
 
@@ -50,17 +55,21 @@ def logging_in():
         sql = "SELECT password_hash FROM users WHERE username = ?"
         password_hash = db.query(sql, [username])[0][0]
     except IndexError:
-        return "User does not exist"
+        error = "User does not exist"
+        return render_template("login.html", error=error)
 
     if check_password_hash(password_hash, password):
         session["username"] = username
+        flash("Successfully logged in")
         return redirect(url_for("index"))
     else:
-        return "ERROR: username or password incorrect"
+        error = "Username or password incorrect"
+        return render_template("login.html", error=error)
     
 @app.route("/logout")
 def logout():
     del session["username"]
+    flash("Successfully logged out")
     return redirect(url_for("index"))
 
 # === adding books to database and shelf ===
@@ -116,4 +125,5 @@ def upload():
     for genre in genres:
         db.execute(sql, (book_id, "genre", genre))
 
-    return redirect("/")
+    flash(f"{title} added to database")
+    return redirect(url_for("index"))

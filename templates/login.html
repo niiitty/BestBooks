@@ -6,16 +6,23 @@
 </head>
 
 <body>
+  <h1>
+    <a href="/">BestBooks</a>
+  </h1>
+
   <form action="/logging_in" method="post">
     <p>
       Username: <br />
-      <input type="text" name="username" />
+      <input type="text" name="username" required/>
     </p>
     <p>
       Password: <br />
-      <input type="password" name="password" />
+      <input type="password" name="password" required/>
     </p>
     <input type="submit" value="Log in" />
   </form>
+  {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}
+  {% endif %}
 </body>
 </html>

@@ -6,7 +6,15 @@
 </head>
 
 <body>
-  <h1>This is the front page</h1>
+  <h1>BestBooks</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
   {% if not session.username %}
   <form action="/register">
