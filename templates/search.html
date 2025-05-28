@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Add book to shelf</title>
+  <title>Search for book</title>
 </head>
 
 <body>
@@ -22,7 +22,7 @@
       <p>Did you mean:</p>
       <ul>
         {% for book in suggestions %}
-         <li>{{ book }}</li>
+         <li><a href="/book/{{ book }}">{{ book }}</a></li>
         {% endfor %}
       </ul>
     {% else %}

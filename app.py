@@ -5,6 +5,7 @@ from difflib import get_close_matches
 
 import sqlite3
 import db
+import librarian
 import config
 
 app = Flask(__name__)
@@ -72,37 +73,48 @@ def logout():
     flash("Successfully logged out")
     return redirect(url_for("index"))
 
-# === adding books to database and shelf ===
+# === adding/modifying/deleting books in database ===
 
-def get_candidates(query):
-    """Searches for books in the database with similar titles."""
-    tokens = set(query)
-    pattern_clauses = ["title LIKE ?"] * len(tokens)
-    values = [f"%{token}%" for token in tokens]
-
-    sql = f"""
-    SELECT title FROM books
-    WHERE {" OR ".join(pattern_clauses)}
-    LIMIT 100
-    """
-    results = db.query(sql, values)
-    return results
-
-@app.route("/add_to_shelf", methods=["GET", "POST"])
-def add_to_shelf():
-    query = ""
+@app.route("/search", methods=["GET", "POST"])
+def search():
     suggestions = []
     if request.method == "POST":
         query = request.form["query"]
-        candidates = get_candidates(query)
+        if librarian.get_book_title(query):
+            return redirect(url_for("book", title=query))
+        candidates = librarian.get_similar_titles(query)
         candidates = [c["title"] for c in candidates]
         suggestions = get_close_matches(query, candidates, n=5, cutoff=0.3)
 
-    return render_template("add_to_shelf.html", query=query, suggestions=suggestions)
+    return render_template("search.html", query=query, suggestions=suggestions)
+
+@app.route("/book/<title>")
+def book(title):
+    book = librarian.get_book_info(title)
+    attr_dict = {}
+    for row in book:
+        key, value = row["key"], row["value"]
+        if key in attr_dict:
+            if isinstance(attr_dict[key], list):
+                attr_dict[key].append(value)
+            else:
+                attr_dict[key] = [attr_dict[key], value]
+        else:
+            attr_dict[key] = value
+
+    return render_template("book.html", title=title, attr=attr_dict)
 
 @app.route("/add_book")
 def add_book():
-    return render_template("add_book.html")
+    genres = sorted([
+        "Adventure", "Biography", "Children's", "Classic", "Comedy", "Contemporary",
+        "Crime", "Dystopian", "Fantasy", "Graphic Novel", "Historical Fiction",
+        "History", "Horror", "LGBTQ+", "Memoir", "Mystery", "Non-fiction",
+        "Philosophy", "Poetry", "Psychology", "Romance", "Science",
+        "Science Fiction", "Self-help", "Short Stories", "Thriller",
+        "Travel", "Young Adult"
+    ])
+    return render_template("add_book.html", genres=genres)
 
 @app.route("/add_book/upload", methods=["POST"])
 def upload():
@@ -117,13 +129,12 @@ def upload():
 
     sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, ?, ?)"
 
-    if author:
-        db.execute(sql, (book_id, "author", author))
+    db.execute(sql, (book_id, "author", author))
     if publication_date:
         db.execute(sql, (book_id, "publication_date", publication_date))
-
     for genre in genres:
         db.execute(sql, (book_id, "genre", genre))
 
-    flash(f"{title} added to database")
+    flash(f"\"{title}\" added to database")
     return redirect(url_for("index"))
+

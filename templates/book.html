@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>{{ title }}</title>
+</head>
+
+<body>
+  <h1><a href="/">BestBooks</a></h1>
+
+  <h2>{{ title }}</h2>
+
+  <p>
+    Author: {{ attr.author }}
+  </p>
+  <p>
+  Published: 
+  {% if attr.publication_date %}
+    {{ attr.publication_date }}
+  {% else %}
+    Unknown date
+  {% endif %}
+  </p>
+  <p>
+  {% if attr.genre %}
+    Genres:
+      {% for genre in attr.genre %}
+      <ul>
+        <li>{{ genre }}</li>
+      </ul>
+      {% endfor %}
+  {% endif %}
+  </p>
+</body>
+
+</html>
