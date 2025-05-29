@@ -78,21 +78,37 @@ def logout():
 @app.route("/search", methods=["GET", "POST"])
 def search():
     suggestions = []
+    query = ""
     if request.method == "POST":
         query = request.form["query"]
-        if librarian.get_book_title(query):
-            return redirect(url_for("book", title=query))
+        exact = librarian.get_books_by_title(query)
+        if exact:
+            return redirect(url_for("book", book_id=exact[0]["book_id"]))
+        
         candidates = librarian.get_similar_titles(query)
-        candidates = [c["title"] for c in candidates]
-        suggestions = get_close_matches(query, candidates, n=5, cutoff=0.3)
+        titles = [c["title"] for c in candidates]
+        matches = get_close_matches(query, titles, n=5, cutoff=0.3)
+
+        # Map title -> candidate dict
+        title_map = {c["title"]: c for c in candidates}
+
+        for title in matches:
+            book = title_map[title]
+            full = librarian.get_books_by_title(book["title"])
+            if full:
+                suggestions.append(full[0])  # include book_id, title, author
 
     return render_template("search.html", query=query, suggestions=suggestions)
 
-@app.route("/book/<title>")
-def book(title):
-    book = librarian.get_book_info(title)
+@app.route("/book/<int:book_id>")
+def book(book_id):
+    base = librarian.get_book_by_book_id(book_id)
+    title = base["title"]
+    author = base["author"]
+
+    attributes = librarian.get_book_attr(book_id)
     attr_dict = {}
-    for row in book:
+    for row in attributes:
         key, value = row["key"], row["value"]
         if key in attr_dict:
             if isinstance(attr_dict[key], list):
@@ -102,19 +118,11 @@ def book(title):
         else:
             attr_dict[key] = value
 
-    return render_template("book.html", title=title, attr=attr_dict)
+    return render_template("book.html", title=title, author=author, attr=attr_dict)
 
 @app.route("/add_book")
 def add_book():
-    genres = sorted([
-        "Adventure", "Biography", "Children's", "Classic", "Comedy", "Contemporary",
-        "Crime", "Dystopian", "Fantasy", "Graphic Novel", "Historical Fiction",
-        "History", "Horror", "LGBTQ+", "Memoir", "Mystery", "Non-fiction",
-        "Philosophy", "Poetry", "Psychology", "Romance", "Science",
-        "Science Fiction", "Self-help", "Short Stories", "Thriller",
-        "Travel", "Young Adult"
-    ])
-    return render_template("add_book.html", genres=genres)
+    return render_template("add_book.html", genres=librarian.genres)
 
 @app.route("/add_book/upload", methods=["POST"])
 def upload():
@@ -123,13 +131,12 @@ def upload():
     publication_date = request.form.get("publication_date")
     genres = request.form.getlist("genres")
 
-    sql = "INSERT INTO books (title) VALUES (?)"
-    db.execute(sql, (title,))
+    sql = "INSERT INTO books (title, author) VALUES (?, ?)"
+    db.execute(sql, (title, author))
     book_id = db.last_insert_id()
 
     sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, ?, ?)"
 
-    db.execute(sql, (book_id, "author", author))
     if publication_date:
         db.execute(sql, (book_id, "publication_date", publication_date))
     for genre in genres:

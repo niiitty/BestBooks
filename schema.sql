@@ -6,7 +6,8 @@ CREATE TABLE users (
 
 CREATE TABLE books (
     book_id INTEGER PRIMARY KEY,
-    title TEXT UNIQUE
+    title TEXT,
+    author TEXT
 );
 
 CREATE TABLE book_attributes (

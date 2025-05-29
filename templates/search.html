@@ -11,24 +11,24 @@
   </h1>
 
   <h2>Search for a Book</h2>
-  <form method="post">
-    <input type="text" name="query" value="{{ query }}" required>
+  <form action="/search" method="post">
+    <input type="search" name="query" value="{{ query }}" required>
     <input type="submit" value="Search">
   </form>
 
-  {% if query %}
-    <h2>Results for "{{ query }}":</h2>
-    {% if suggestions %}
-      <p>Did you mean:</p>
-      <ul>
-        {% for book in suggestions %}
-         <li><a href="/book/{{ book }}">{{ book }}</a></li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No suggestions found.</p>
-    {% endif %}
+{% if query %}
+  <h2>Results for "{{ query }}":</h2>
+  {% if suggestions %}
+    <p>Did you mean:</p>
+    <ul>
+      {% for book in suggestions %}
+        <li><a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No suggestions found.</p>
   {% endif %}
+{% endif %}
 
   Can't find your book? Add it to the database!
   <form action="/add_book">
