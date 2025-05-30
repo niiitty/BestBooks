@@ -20,19 +20,19 @@
       <input type="text" name="author" required/>
     </p>
     <p>
-      Genres:
-          {% for genre in genres %}
-          <div class="genre-item">
-              <label>
-                  <input type="checkbox" name="genres" value="{{ genre }}">
-                  {{ genre }}
-              </label>
-          </div>
-          {% endfor %}
+      Publication date:
+      <input type="date" name="publication_date">
     </p>
     <p>
-        Publication date:
-        <input type="date" name="publication_date">
+      Genres:
+      {% for genre in genres %}
+      <div class="genre-item">
+        <label>
+          <input type="checkbox" name="genres" value="{{ genre }}">
+          {{ genre }}
+        </label>
+      </div>
+      {% endfor %}
     </p>
     <input type="submit" value="Add to database">
   </form>

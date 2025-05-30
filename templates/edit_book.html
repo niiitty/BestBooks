@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Edit {{ book.title }} by {{ book.author }}</title>
+</head>
+
+<body>
+  <h1><a href="/">BestBooks</a></h1>
+
+  <h2>{{ book.title }}</h2>
+
+  <form action="/book/{{ book.book_id }}/edit" method="post">
+    <p>
+      Title:
+      <input type="text" name="title" value="{{ book.title }}" required>
+    </p>
+    <p>
+      Author: 
+      <input type="text" name="author" value="{{ book.author }}" required>
+    </p>
+    <p>
+      Publication date:
+      <input type="date" name="publication_date" value="{{ attr.publication_date }}">
+    </p>
+    <p>
+      Genres:
+      {% for genre in genres %}
+      <div class="genre-item">
+        <label>
+          {% if genre in attr.genre %}
+          <input type="checkbox" name="genres" value="{{ genre }}" checked>
+          {{ genre }}
+          {% else %}
+          <input type="checkbox" name="genres" value="{{ genre }}">
+          {{ genre }}
+          {% endif %}
+        </label>
+      </div>
+      {% endfor %}
+    </p>
+    <input type="submit" value="Submit">
+  </form>
+</body>
+
+</html>

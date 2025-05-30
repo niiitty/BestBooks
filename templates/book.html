@@ -9,7 +9,12 @@
   <h1><a href="/">BestBooks</a></h1>
 
   <h2>{{ title }}</h2>
-
+  <form action="/book/{{ book_id }}/edit">
+    <input type="submit" value="Edit book">
+  </form>
+  <form action="/book/{{ book_id }}/delete">
+    <input type="submit" value="Remove from database">
+  </form>
   <p>
     Author: {{ author }}
   </p>

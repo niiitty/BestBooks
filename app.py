@@ -75,6 +75,27 @@ def logout():
 
 # === adding/modifying/deleting books in database ===
 
+@app.route("/add_book")
+def add_book():
+    return render_template("add_book.html", genres=librarian.genres)
+
+@app.route("/add_book/upload", methods=["POST"])
+def upload():
+    title = request.form["title"]
+    author = request.form["author"]
+    publication_date = request.form.get("publication_date")
+    genres = request.form.getlist("genres")
+
+    book_id = librarian.add_book(title, author)
+
+    if publication_date:
+        librarian.add_attribute(book_id, "publication_date", publication_date)
+    for genre in genres:
+        librarian.add_attribute(book_id, "genre", genre)
+
+    flash(f"\"{title}\" added to database")
+    return redirect(url_for("index"))
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     suggestions = []
@@ -89,59 +110,64 @@ def search():
         titles = [c["title"] for c in candidates]
         matches = get_close_matches(query, titles, n=5, cutoff=0.3)
 
-        # Map title -> candidate dict
         title_map = {c["title"]: c for c in candidates}
 
         for title in matches:
             book = title_map[title]
             full = librarian.get_books_by_title(book["title"])
             if full:
-                suggestions.append(full[0])  # include book_id, title, author
+                suggestions.append(full[0])
 
     return render_template("search.html", query=query, suggestions=suggestions)
 
-@app.route("/book/<int:book_id>")
+@app.route("/book/<int:book_id>", methods=["GET", "POST"])
 def book(book_id):
     base = librarian.get_book_by_book_id(book_id)
     title = base["title"]
     author = base["author"]
+    
+    attr = librarian.get_book_attributes(book_id)
 
-    attributes = librarian.get_book_attr(book_id)
-    attr_dict = {}
-    for row in attributes:
-        key, value = row["key"], row["value"]
-        if key in attr_dict:
-            if isinstance(attr_dict[key], list):
-                attr_dict[key].append(value)
-            else:
-                attr_dict[key] = [attr_dict[key], value]
-        else:
-            attr_dict[key] = value
+    return render_template("book.html", book_id=book_id, title=title, author=author, attr=attr)
 
-    return render_template("book.html", title=title, author=author, attr=attr_dict)
+@app.route("/book/<int:book_id>/edit", methods=["GET", "POST"])
+def edit_book(book_id):
+    book = librarian.get_book_by_book_id(book_id)
+    attr = librarian.get_book_attributes(book_id)
 
-@app.route("/add_book")
-def add_book():
-    return render_template("add_book.html", genres=librarian.genres)
+    if request.method == "GET":
+        return render_template("edit_book.html", book=book, attr=attr, genres=librarian.genres)
+    
+    if request.method == "POST":
+        title = request.form["title"]
+        author = request.form["author"]
+        publication_date = request.form.get("publication_date")
+        genres = request.form.getlist("genres")
 
-@app.route("/add_book/upload", methods=["POST"])
-def upload():
-    title = request.form["title"]
-    author = request.form["author"]
-    publication_date = request.form.get("publication_date")
-    genres = request.form.getlist("genres")
+        if title != book["title"]:
+            librarian.update_title(book_id, title)
 
-    sql = "INSERT INTO books (title, author) VALUES (?, ?)"
-    db.execute(sql, (title, author))
-    book_id = db.last_insert_id()
+        if author != book["author"]:
+            librarian.update_author(book_id, author)
 
-    sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, ?, ?)"
+        if publication_date != attr.get("publication_date"):
+            librarian.update_attribute(book_id, "publication_date", publication_date)
 
-    if publication_date:
-        db.execute(sql, (book_id, "publication_date", publication_date))
-    for genre in genres:
-        db.execute(sql, (book_id, "genre", genre))
+        if set(genres) != set(attr.get("genre", [])):
+            librarian.update_attribute(book_id, "genre", genres)
 
-    flash(f"\"{title}\" added to database")
-    return redirect(url_for("index"))
+        return redirect(url_for("book", book_id=book_id))
+    
+@app.route("/book/<int:book_id>/delete", methods=["GET", "POST"])
+def delete_book(book_id):
+    book = librarian.get_book_by_book_id(book_id)
 
+    if request.method == "GET":
+        return render_template("delete_book.html", book=book)
+    
+    if request.method == "POST":
+        if request.form["delete"]:
+            librarian.delete_book(book_id)
+            flash(f"\"{book["title"]}\" successfully removed from database.")
+            return redirect(url_for("index"))
+        return redirect(url_for("book", book_id=book_id))
