@@ -21,7 +21,8 @@ def login_required(f):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    books = librarian.get_books()
+    return render_template("index.html", books=books)
 
 # === account creation and logging in/out ===
 

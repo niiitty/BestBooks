@@ -54,6 +54,12 @@ def get_book_attributes(book_id: int) -> dict[Row, list]:
 
     return attr_dict
 
+def get_books():
+    sql = """SELECT book_id, title, author FROM books 
+            GROUP BY book_id
+            ORDER BY book_id DESC"""
+    return db.query(sql, [])
+
 def get_books_by_title(title: str) -> list[Row]:
     "Returns book_id, title, author."
     sql = "SELECT book_id, title, author FROM books WHERE title = ?"
