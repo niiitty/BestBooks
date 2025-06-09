@@ -7,6 +7,11 @@
 
 <body>
   <h1>BestBooks</h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: {{ session.username }}</u>
+  </p>
+  {% endif %}
 
   {% with messages = get_flashed_messages() %}
     {% if messages %}

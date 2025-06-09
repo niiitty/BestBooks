@@ -6,6 +6,7 @@ CREATE TABLE users (
 
 CREATE TABLE books (
     book_id INTEGER PRIMARY KEY,
+    user_id INTEGER REFERENCES users,
     title TEXT,
     author TEXT
 );

@@ -1,15 +1,23 @@
 from flask import Flask
-from flask import render_template, request, session, redirect, url_for, flash
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import abort, flash, redirect, render_template, request, session, url_for
 from difflib import get_close_matches
+from functools import wraps
 
 import sqlite3
-import db
 import librarian
+import users
 import config
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login", next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.route("/")
 def index():
@@ -25,16 +33,17 @@ def register():
 def create_account():
     error = None
     username = request.form["username"]
+    if not username or not 6 <= len(username) <= 50:
+        abort(403)
     password1 = request.form["password1"]
     password2 = request.form["password2"]
     if password1 != password2:
         error = "Passwords must match"
-        return render_template("register.html", error=error)
-    password_hash = generate_password_hash(password1)
-
+        return render_template("register.html", error=error, username=username)
+    if not password1 or not 7 <= len(password1) <= 100:
+        abort(403)
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        users.create_user(username, password1)
     except sqlite3.IntegrityError:
         error = "Username taken"
         return render_template("register.html", error=error)
@@ -53,22 +62,24 @@ def logging_in():
     password = request.form["password"]
 
     try:
-        sql = "SELECT password_hash FROM users WHERE username = ?"
-        password_hash = db.query(sql, [username])[0][0]
+        user_id = users.check_login(username, password)
     except IndexError:
         error = "User does not exist"
         return render_template("login.html", error=error)
 
-    if check_password_hash(password_hash, password):
+    if user_id:
+        session["user_id"] = user_id
         session["username"] = username
         flash("Successfully logged in")
         return redirect(url_for("index"))
-    else:
-        error = "Username or password incorrect"
-        return render_template("login.html", error=error)
+    
+    error = "Username or password incorrect"
+    return render_template("login.html", error=error, username=username)
     
 @app.route("/logout")
+@login_required
 def logout():
+    del session["user_id"]
     del session["username"]
     flash("Successfully logged out")
     return redirect(url_for("index"))
@@ -76,17 +87,24 @@ def logout():
 # === adding/modifying/deleting books in database ===
 
 @app.route("/add_book")
+@login_required
 def add_book():
     return render_template("add_book.html", genres=librarian.genres)
 
 @app.route("/add_book/upload", methods=["POST"])
+@login_required
 def upload():
     title = request.form["title"]
+    if not title or len(title) > 100:
+        abort(403)
     author = request.form["author"]
+    if not author or len(author) > 100:
+        abort(403)
     publication_date = request.form.get("publication_date")
     genres = request.form.getlist("genres")
+    user_id = session["user_id"]
 
-    book_id = librarian.add_book(title, author)
+    book_id = librarian.add_book(user_id, title, author)
 
     if publication_date:
         librarian.add_attribute(book_id, "publication_date", publication_date)
@@ -97,6 +115,7 @@ def upload():
     return redirect(url_for("index"))
 
 @app.route("/search", methods=["GET", "POST"])
+@login_required
 def search():
     suggestions = []
     query = ""
@@ -123,16 +142,22 @@ def search():
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
 def book(book_id):
     base = librarian.get_book_by_book_id(book_id)
-    title = base["title"]
-    author = base["author"]
+    if not base:
+        abort(404)
     
     attr = librarian.get_book_attributes(book_id)
 
-    return render_template("book.html", book_id=book_id, title=title, author=author, attr=attr)
+    return render_template("book.html", book_id=book_id, base=base, attr=attr)
 
 @app.route("/book/<int:book_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_book(book_id):
     book = librarian.get_book_by_book_id(book_id)
+    if not book:
+        abort(404)
+    if session["user_id"] != book["user_id"]:
+        abort(403)
+
     attr = librarian.get_book_attributes(book_id)
 
     if request.method == "GET":
@@ -140,7 +165,11 @@ def edit_book(book_id):
     
     if request.method == "POST":
         title = request.form["title"]
+        if not title or len(title) > 100:
+            abort(403)
         author = request.form["author"]
+        if not author or len(author) > 100:
+            abort(403)
         publication_date = request.form.get("publication_date")
         genres = request.form.getlist("genres")
 
@@ -159,15 +188,20 @@ def edit_book(book_id):
         return redirect(url_for("book", book_id=book_id))
     
 @app.route("/book/<int:book_id>/delete", methods=["GET", "POST"])
+@login_required
 def delete_book(book_id):
     book = librarian.get_book_by_book_id(book_id)
+    if not book:
+        abort(404)
+    if session["user_id"] != book["user_id"]:
+        abort(403)
 
     if request.method == "GET":
         return render_template("delete_book.html", book=book)
     
     if request.method == "POST":
-        if request.form["delete"]:
+        if "delete" in request.form:
             librarian.delete_book(book_id)
-            flash(f"\"{book["title"]}\" successfully removed from database.")
+            flash(f"\"{book['title']}\" successfully removed from database.")
             return redirect(url_for("index"))
         return redirect(url_for("book", book_id=book_id))

@@ -6,22 +6,20 @@
 </head>
 
 <body>
-  <h1>
-    <a href="/">BestBooks</a>
-  </h1>
+  <h1><a href="/">BestBooks</a></h1>
 
   <form action="/create_account" method="post">
     <p>
       Username: <br />
-      <input type="text" name="username" required/>
+      <input type="text" name="username" required value="{{ username }}" minlength="6" maxlength="50"/>
     </p>
     <p>
       Password: <br />
-      <input type="password1" name="password1" required/>
+      <input type="password1" name="password1" required minlength="7" maxlength="100"/>
     </p>
     <p>
       Re-enter Password: <br />
-      <input type="password2" name="password2" required/>
+      <input type="password2" name="password2" required minlength="7" maxlength="100"/>
     </p>
     <input type="submit" value="Create account" />
   </form>

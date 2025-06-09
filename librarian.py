@@ -25,9 +25,9 @@ def get_similar_titles(query) -> list[Row]:
     """
     return db.query(sql, values)
 
-def add_book(title, author):
-    sql = "INSERT INTO books (title, author) VALUES (?, ?)"
-    db.execute(sql, (title, author))
+def add_book(user_id, title, author):
+    sql = "INSERT INTO books (user_id, title, author) VALUES (?, ?, ?)"
+    db.execute(sql, (user_id, title, author))
     return db.last_insert_id()
 
 def add_attribute(book_id, key, value):
@@ -56,13 +56,14 @@ def get_book_attributes(book_id: int) -> dict[Row, list]:
 
 def get_books_by_title(title: str) -> list[Row]:
     "Returns book_id, title, author."
-    sql = "SELECT * FROM books WHERE title = ?"
+    sql = "SELECT book_id, title, author FROM books WHERE title = ?"
     return db.query(sql, [title])
 
 def get_book_by_book_id(book_id: int) -> Row:
-    "Returns book_id, title, author."
-    sql = "SELECT * FROM books WHERE book_id = ?"
-    return db.query(sql, [book_id])[0]
+    "Returns user_id, book_id, title, author."
+    sql = "SELECT user_id, book_id, title, author FROM books WHERE book_id = ?"
+    result = db.query(sql, [book_id])
+    return result[0] if result else None
 
 def update_title(book_id, title):
     sql = "UPDATE books SET title = ? WHERE book_id = ?"

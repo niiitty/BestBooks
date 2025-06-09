@@ -6,18 +6,21 @@
 </head>
 
 <body>
-  <h1>
-    <a href="/">BestBooks</a>
-  </h1>
+  <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: {{ session.username }}</u>
+  </p>
+  {% endif %}
 
   <form action="/add_book/upload" method="post">
     <p>
       Title:
-      <input type="text" name="title" required/>
+      <input type="text" name="title" required maxlength="100"/>
     </p>
     <p>
       Author:
-      <input type="text" name="author" required/>
+      <input type="text" name="author" required maxlength="100"/>
     </p>
     <p>
       Publication date:

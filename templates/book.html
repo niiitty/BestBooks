@@ -2,21 +2,28 @@
 <html>
 
 <head>
-  <title>{{ title }} by {{ author }}</title>
+  <title>{{ base.title }} by {{ base.author }}</title>
 </head>
 
 <body>
   <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: {{ session.username }}</u>
+  </p>
+  {% endif %}
 
-  <h2>{{ title }}</h2>
+  <h2>{{ base.title }}</h2>
+  {% if session.user_id == base.user_id %}
   <form action="/book/{{ book_id }}/edit">
     <input type="submit" value="Edit book">
   </form>
   <form action="/book/{{ book_id }}/delete">
     <input type="submit" value="Remove from database">
   </form>
+  {% endif %}
   <p>
-    Author: {{ author }}
+    Author: {{ base.author }}
   </p>
   <p>
   Published: 

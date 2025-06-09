@@ -7,17 +7,22 @@
 
 <body>
   <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: {{ session.username }}</u>
+  </p>
+  {% endif %}
 
   <h2>{{ book.title }}</h2>
 
   <form action="/book/{{ book.book_id }}/edit" method="post">
     <p>
       Title:
-      <input type="text" name="title" value="{{ book.title }}" required>
+      <input type="text" name="title" value="{{ book.title }}" required maxlength="100">
     </p>
     <p>
       Author: 
-      <input type="text" name="author" value="{{ book.author }}" required>
+      <input type="text" name="author" value="{{ book.author }}" required maxlength="100">
     </p>
     <p>
       Publication date:
