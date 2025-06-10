@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Profile of {{ user.username }}</title>
+</head>
+
+<body>
+  <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
+  </p>
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
+  {% endif %}
+
+  <h2>{{ user.username }}</h2>
+
+  <p>Joined at: {{ user.join_date }}</p>
+
+  <b>{{ user.username }}'s books:</b>
+  {% if books %}
+    {% for book in books %}
+    <p>
+      <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
+      <hr>
+    </p>
+    {% endfor %}
+  {% else %}
+    This user has not added any books yet.
+  {% endif %}
+</body>
+
+</html>

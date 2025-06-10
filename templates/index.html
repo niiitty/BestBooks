@@ -9,8 +9,11 @@
   <h1>BestBooks</h1>
   {% if session.username %}
   <p>
-    <u>Logged in as: {{ session.username }}</u>
+    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
   </p>
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
   {% endif %}
 
   {% with messages = get_flashed_messages() %}
@@ -28,20 +31,19 @@
   <form action="/login">
     <input type="submit" value="Log in" />
   </form>
-  {% else %}
-
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  Search for a book:
-  <form action="/search" method="post">
-    <input type="search" name="query" placeholder="Enter title" required>
-    <input type="submit" value="Search">
-  </form>
-  <form action="/add_book">
-    <input type="submit" value="Add a book into the database">
-  </form>
   {% endif %}
+
+  <p>
+    Search for a book:
+    <form action="/search" method="post">
+      <input type="search" name="query" placeholder="Enter title" required>
+      <input type="submit" value="Search">
+    </form>
+    <form action="/add_book">
+      <input type="submit" value="Add a book into the database">
+    </form>
+  </p>
+
 
   {% if books %}
   <hr>

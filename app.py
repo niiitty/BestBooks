@@ -1,12 +1,12 @@
-from flask import Flask
-from flask import abort, flash, redirect, render_template, request, session, url_for
-from difflib import get_close_matches
-from functools import wraps
-
 import sqlite3
 import librarian
 import users
 import config
+
+from flask import Flask
+from flask import abort, flash, redirect, render_template, request, session, url_for
+from difflib import get_close_matches
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -116,7 +116,6 @@ def upload():
     return redirect(url_for("index"))
 
 @app.route("/search", methods=["GET", "POST"])
-@login_required
 def search():
     suggestions = []
     query = ""
@@ -145,10 +144,10 @@ def book(book_id):
     base = librarian.get_book_by_book_id(book_id)
     if not base:
         abort(404)
-    
     attr = librarian.get_book_attributes(book_id)
+    user = users.get_user(base["user_id"])
 
-    return render_template("book.html", book_id=book_id, base=base, attr=attr)
+    return render_template("book.html", book_id=book_id, base=base, attr=attr, user=user)
 
 @app.route("/book/<int:book_id>/edit", methods=["GET", "POST"])
 @login_required
@@ -206,3 +205,14 @@ def delete_book(book_id):
             flash(f"\"{book['title']}\" successfully removed from database.")
             return redirect(url_for("index"))
         return redirect(url_for("book", book_id=book_id))
+
+# === user profile ===
+
+@app.route("/profile/<int:user_id>", methods=["GET", "POST"])
+def profile(user_id):
+    user = users.get_user(user_id)
+    if not user:
+        abort(404)
+    books = librarian.get_books_by_user_id(user_id)
+
+    return render_template("profile.html", user=user, books=books)

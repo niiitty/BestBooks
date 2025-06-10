@@ -9,8 +9,11 @@
   <h1><a href="/">BestBooks</a></h1>
   {% if session.username %}
   <p>
-    <u>Logged in as: {{ session.username }}</u>
+    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
   </p>
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
   {% endif %}
 
   <h2>{{ book.author }}: {{ book.title }}</h2>

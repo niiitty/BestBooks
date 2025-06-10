@@ -61,15 +61,20 @@ def get_books():
     return db.query(sql, [])
 
 def get_books_by_title(title: str) -> list[Row]:
-    "Returns book_id, title, author."
+    "Returns book_id, title, author of (multiple) books with the exact title."
     sql = "SELECT book_id, title, author FROM books WHERE title = ?"
     return db.query(sql, [title])
 
 def get_book_by_book_id(book_id: int) -> Row:
-    "Returns user_id, book_id, title, author."
+    "Returns user_id, book_id, title, author of a specific book."
     sql = "SELECT user_id, book_id, title, author FROM books WHERE book_id = ?"
     result = db.query(sql, [book_id])
     return result[0] if result else None
+
+def get_books_by_user_id(user_id: int) -> Row:
+    "Returns book_id, title, author of (multiple) books associated with a certain user."
+    sql = "SELECT book_id, title, author FROM books WHERE user_id = ?"
+    return db.query(sql, [user_id])
 
 def update_title(book_id, title):
     sql = "UPDATE books SET title = ? WHERE book_id = ?"
@@ -105,4 +110,3 @@ def delete_book(book_id):
     
     sql = "DELETE FROM books WHERE book_id = ?"
     db.execute(sql, [book_id])
-

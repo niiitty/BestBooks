@@ -1,7 +1,8 @@
 CREATE TABLE users (
     user_id INTEGER PRIMARY KEY, 
     username TEXT UNIQUE,
-    password_hash TEXT
+    password_hash TEXT,
+    join_date TEXT
 );
 
 CREATE TABLE books (
