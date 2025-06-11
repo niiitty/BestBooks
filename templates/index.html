@@ -44,14 +44,22 @@
     </form>
   </p>
 
-
   {% if books %}
+  Recently added books: <br>
   <hr>
     {% for book in books %}
      <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
      <hr>
     {% endfor %}
+  {% else %}
   {% endif %}
+
+  <p>
+    <a href="/{{ page - 1 }}">&lt;&lt;</a>
+    Page {{ page }}/{{ page_count }}
+    <a href="/{{ page + 1 }}">&gt;&gt;</a>
+  </p>
+  <hr />
 </body>
 
 </html>

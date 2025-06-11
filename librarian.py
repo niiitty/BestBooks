@@ -54,11 +54,14 @@ def get_book_attributes(book_id: int) -> dict[Row, list]:
 
     return attr_dict
 
-def get_books():
+def get_books(page, page_size):
     sql = """SELECT book_id, title, author FROM books 
             GROUP BY book_id
-            ORDER BY book_id DESC"""
-    return db.query(sql, [])
+            ORDER BY book_id DESC
+            LIMIT ? OFFSET ?"""
+    limit = page_size
+    offset = (page - 1) * page_size
+    return db.query(sql, [limit, offset])
 
 def get_books_by_title(title: str) -> list[Row]:
     "Returns book_id, title, author of (multiple) books with the exact title."
@@ -71,10 +74,15 @@ def get_book_by_book_id(book_id: int) -> Row:
     result = db.query(sql, [book_id])
     return result[0] if result else None
 
-def get_books_by_user_id(user_id: int) -> Row:
+def get_books_by_user_id(user_id: int, page, page_size) -> Row:
     "Returns book_id, title, author of (multiple) books associated with a certain user."
-    sql = "SELECT book_id, title, author FROM books WHERE user_id = ?"
-    return db.query(sql, [user_id])
+    sql = """SELECT book_id, title, author FROM books 
+            WHERE user_id = ?
+            LIMIT ? OFFSET ?"""
+    
+    limit = page_size
+    offset = (page - 1) * page_size
+    return db.query(sql, [user_id, limit, offset])
 
 def update_title(book_id, title):
     sql = "UPDATE books SET title = ? WHERE book_id = ?"
@@ -110,3 +118,11 @@ def delete_book(book_id):
     
     sql = "DELETE FROM books WHERE book_id = ?"
     db.execute(sql, [book_id])
+
+def book_count():
+    sql = "SELECT COUNT(book_id) FROM books"
+    return db.query(sql, [])[0]["COUNT(book_id)"]
+
+def book_count_of_user(user_id):
+    sql = "SELECT COUNT(book_id) FROM books WHERE user_id = ?"
+    return db.query(sql, [user_id])[0]["COUNT(book_id)"]

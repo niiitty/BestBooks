@@ -31,6 +31,13 @@
   {% else %}
     This user has not added any books yet.
   {% endif %}
+
+  <p>
+    <a href="/profile/{{ user_id }}/{{ page - 1 }}">&lt;&lt;</a>
+    Page {{ page }}/{{ page_count }}
+    <a href="/profile/{{ user_id }}/{{ page + 1 }}">&gt;&gt;</a>
+  </p>
+  <hr />
 </body>
 
 </html>
