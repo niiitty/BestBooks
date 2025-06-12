@@ -139,8 +139,8 @@ def search():
             return redirect(url_for("book", book_id=exact[0]["book_id"]))
         
         candidates = librarian.get_similar_titles(query)
-        titles = [c["title"] for c in candidates]
-        matches = get_close_matches(query, titles, n=5, cutoff=0.3)
+        titles = [c["title"].lower() for c in candidates]
+        matches = get_close_matches(query.lower(), titles, n=10, cutoff=0.25)
 
         title_map = {c["title"]: c for c in candidates}
 

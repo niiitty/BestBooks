@@ -11,17 +11,15 @@ genres = sorted([
     "Travel", "Young Adult"
 ])
 
-# TODO might not work properly with large databases due to limit 
-def get_similar_titles(query) -> list[Row]:
+def get_similar_titles(query: str) -> list[Row]:
     "Searches for books in the database with similar titles."
-    tokens = set(query)
+    tokens = query.strip().split()
     pattern_clauses = ["title LIKE ?"] * len(tokens)
     values = [f"%{token}%" for token in tokens]
 
     sql = f"""
     SELECT book_id, title FROM books
     WHERE {" OR ".join(pattern_clauses)}
-    LIMIT 100
     """
     return db.query(sql, values)
 
@@ -63,6 +61,7 @@ def get_books(page, page_size):
     offset = (page - 1) * page_size
     return db.query(sql, [limit, offset])
 
+#TODO bug with same titles
 def get_books_by_title(title: str) -> list[Row]:
     "Returns book_id, title, author of (multiple) books with the exact title."
     sql = "SELECT book_id, title, author FROM books WHERE title = ?"
