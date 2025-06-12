@@ -11,6 +11,7 @@ from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+librarian.db.initialize_database()
 
 def login_required(f):
     @wraps(f)

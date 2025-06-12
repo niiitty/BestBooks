@@ -1,6 +1,11 @@
 import sqlite3
 from flask import g
 
+def initialize_database(db_path="database.db"):
+    with sqlite3.connect(db_path) as con:
+        with open("schema.sql", "r") as f:
+            con.executescript(f.read())
+
 def get_connection():
     con = sqlite3.connect("database.db")
     con.execute("PRAGMA foreign_keys = ON")
