@@ -130,6 +130,8 @@ def upload():
     if publication_date:
         librarian.add_attribute(book_id, "publication_date", publication_date)
     for genre in genres:
+        if genre not in librarian.genres:
+            abort(403)
         librarian.add_attribute(book_id, "genre", genre)
 
     flash(f"\"{title}\" added to database")
@@ -193,6 +195,8 @@ def edit_book(book_id):
             abort(403)
         publication_date = request.form.get("publication_date")
         genres = request.form.getlist("genres")
+        if not set(genres).issubset(librarian.genres):
+            abort(403)
 
         if title != book["title"]:
             librarian.update_title(book_id, title)
