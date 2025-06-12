@@ -3,6 +3,7 @@ import librarian
 import users
 import config
 import math
+import secrets
 
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session, url_for
@@ -21,6 +22,10 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
+    
 @app.route("/")
 @app.route("/<int:page>")
 def index(page=1):
@@ -83,6 +88,7 @@ def logging_in():
 
     if user_id:
         session["user_id"] = user_id
+        session["csrf_token"] = secrets.token_hex(16)
         session["username"] = username
         flash("Successfully logged in")
         return redirect(url_for("index"))
@@ -108,6 +114,7 @@ def add_book():
 @app.route("/add_book/upload", methods=["POST"])
 @login_required
 def upload():
+    check_csrf()
     title = request.form["title"]
     if not title or len(title) > 100:
         abort(403)
@@ -177,6 +184,7 @@ def edit_book(book_id):
         return render_template("edit_book.html", book=book, attr=attr, genres=librarian.genres)
     
     if request.method == "POST":
+        check_csrf()
         title = request.form["title"]
         if not title or len(title) > 100:
             abort(403)
@@ -213,6 +221,7 @@ def delete_book(book_id):
         return render_template("delete_book.html", book=book)
     
     if request.method == "POST":
+        check_csrf()
         if "delete" in request.form:
             librarian.delete_book(book_id)
             flash(f"\"{book['title']}\" successfully removed from database.")

@@ -20,6 +20,7 @@
 
   <p>Are you sure you want to delete {{ book.title }} by {{ book.author }}?</p>
   <form action="/book/{{ book.book_id }}/delete" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Yes" name="delete">
     <input type="submit" value="No">
   </form>

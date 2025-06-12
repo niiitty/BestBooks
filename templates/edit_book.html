@@ -47,6 +47,7 @@
       </div>
       {% endfor %}
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Submit">
   </form>
 </body>
