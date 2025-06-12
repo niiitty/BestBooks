@@ -30,9 +30,9 @@ def index(page=1):
     page_count = max(page_count, 1)
 
     if page < 1:
-        return redirect("/1")
+        return redirect(url_for("index", page=1))
     if page > page_count:
-        return redirect("/" + str(page_count))
+        return redirect(url_for("index", page=page_count))
     
     books = librarian.get_books(page, page_size)
     return render_template("index.html", books=books, page=page, page_count=page_count)
@@ -234,10 +234,19 @@ def profile(user_id, page=1):
     page_count = max(page_count, 1)
 
     if page < 1:
-        return redirect(f"/profile/{user_id}/1")
+        return redirect(url_for("profile", user_id=user_id, page=1))
     if page > page_count:
-        return redirect(f"/profile/{user_id}/" + str(page_count))
+        return redirect(url_for("profile", user_id=user_id, page=page_count))
     
     books = librarian.get_books_by_user_id(user_id, page, page_size)
 
-    return render_template("profile.html", user_id=user_id, user=user, books=books, page=page, page_count=page_count)
+    return render_template(
+        "profile.html",
+        user_id=user_id,
+        user=user,
+        books=books,
+        page=page,
+        page_count=page_count,
+        book_count=book_count
+    )
+

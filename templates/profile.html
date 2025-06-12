@@ -20,14 +20,18 @@
 
   <p>Joined at: {{ user.join_date }}</p>
 
-  <b>{{ user.username }}'s books:</b>
   {% if books %}
-    {% for book in books %}
-    <p>
-      <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
-      <hr>
-    </p>
-    {% endfor %}
+    {% if book_count == 1 %}
+    <b>{{ user.username }} has added 1 book:</b>
+    {% else %}
+    <b>{{ user.username }} has added {{ book_count }} books:</b>
+    {% endif %}
+      {% for book in books %}
+      <p>
+        <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
+        <hr>
+      </p>
+      {% endfor %}
   {% else %}
     This user has not added any books yet.
   {% endif %}
