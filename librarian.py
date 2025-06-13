@@ -112,6 +112,9 @@ def update_attribute(book_id, key, value):
             db.execute(sql, [book_id, key, value])
 
 def delete_book(book_id):
+    sql = "DELETE FROM reviews WHERE book_id = ?"
+    db.execute(sql, [book_id])
+
     sql = "DELETE FROM book_attributes WHERE book_id = ?"
     db.execute(sql, [book_id])
     
@@ -125,3 +128,37 @@ def book_count():
 def book_count_of_user(user_id):
     sql = "SELECT COUNT(book_id) FROM books WHERE user_id = ?"
     return db.query(sql, [user_id])[0]["COUNT(book_id)"]
+
+def add_review(book_id, user_id, rating, title, content):
+    sql = "INSERT INTO reviews (book_id, user_id, sent_at, rating, title, content) VALUES (?, ?, datetime('now'), ?, ?, ?)"
+    db.execute(sql, [book_id, user_id, rating, title, content])
+
+def get_reviews_by_book(book_id):
+    "Returns id, user_id, username, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."
+    sql = """SELECT id, r.user_id, username, sent_at, rating, r.title 
+            FROM reviews r, books b, users u
+            WHERE b.book_id = ? AND
+            r.book_id = b.book_id AND
+            r.user_id = u.user_id 
+            """
+    return db.query(sql, [book_id])
+
+def get_reviews_by_user(user_id):
+    "Returns id, book_id, book title, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."
+    sql = """SELECT id, b.book_id, b.title, sent_at, rating, r.title
+            FROM reviews r, books b
+            WHERE user_id = ? AND r.book_id = b.book_id
+            """
+    return db.query(sql, [user_id])
+
+def get_review(book_id, user_id):
+    "Returns rating, title, content of review."
+    sql = "SELECT rating, title, content FROM reviews WHERE book_id = ? AND user_id = ?"
+    result = db.query(sql, [book_id, user_id])
+    return result[0] if result else None
+
+def update_review(book_id, user_id, key, value):
+    if key not in ["rating", "title", "content"]:
+        raise ValueError
+    sql = f"UPDATE reviews SET {key} = ? WHERE book_id = ? AND user_id = ?"
+    db.execute(sql, [value, book_id, user_id])

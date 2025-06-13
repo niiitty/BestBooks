@@ -27,26 +27,61 @@
   {% else %}
   <i>Book added by: <a href="/profile/{{ base.user_id }}">{{ user.username }}</a></i>
   {% endif %}
+  
+  {% if session.username %}
+  <form action="/book/{{ book_id }}/add_review">
+    <input type="submit" value="Add review">
+  </form>
+  {% endif %}
+
   <p>
     <b>Author</b>: {{ base.author }}
   </p>
   <p>
-  <b>Published</b>: 
-  {% if attr.publication_date %}
+    <b>Published</b>: 
+    {% if attr.publication_date %}
     {{ attr.publication_date }}
-  {% else %}
+    {% else %}
     Unknown date
-  {% endif %}
+    {% endif %}
   </p>
   <p>
-  {% if attr.genre %}
+    {% if attr.genre %}
     <b>Genres</b>:
       {% for genre in attr.genre %}
       <ul>
         <li>{{ genre }}</li>
       </ul>
       {% endfor %}
-  {% endif %}
+    {% endif %}
+  </p>
+
+  <p>
+    <h3><u>User reviews:</u></h3>
+    {% if reviews %}
+      {% for review in reviews %}
+      <h4>
+        <a href="/profile/{{ review.user_id }}">{{ review.username }}'s</a> rating: 
+        {{ review.rating }} stars.
+
+        {% if review.title %}
+        <a href="/book/{{ book_id }}/{{ review.user_id }}">{{ review.title }}</a>
+        {% else %}
+        <i>No review.</i>
+        {% endif %}
+
+        {% if session.user_id == review.user_id %}
+        <a href="/book/{{ book_id }}/add_review">edit</a> 
+        <a href="/book/{{ book_id }}/review/{{ review.id }}/delete">delete</a>
+        {% endif %}
+
+        <i>sent at</i> {{ review.sent_at }}
+      <hr>
+      </h4>
+      {% endfor %}
+    {% else %}
+    <i>This book has no reviews yet.</i>
+    {% endif %}
   </p>
 </body>
 

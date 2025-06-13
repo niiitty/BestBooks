@@ -21,8 +21,10 @@ CREATE TABLE IF NOT EXISTS book_attributes (
 
 CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY,
-    content TEXT,
     book_id INTEGER REFERENCES books,
+    user_id INTEGER REFERENCES users,
     sent_at TEXT,
-    user_id INTEGER REFERENCES users
+    rating INTEGER,
+    title TEXT,
+    content TEXT
 );

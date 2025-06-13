@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>{{ writer.username }}'s review of {{ book.title }} by {{ book.author }}</title>
+</head>
+
+<body>
+  <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
+  </p>
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
+  {% endif %}
+
+  <h3>{{ book.title }}</h3>
+  <p>
+    <b>Author</b>: {{ book.author }}
+  </p>
+  <p>
+    <h2>{{ review.title }}</h2>
+  </p>
+  <p>
+    <b>{{ review.rating }} stars</b>
+  </p>
+  <p>
+    {{ review.content }}
+  </p>
+</body>
+
+</html>

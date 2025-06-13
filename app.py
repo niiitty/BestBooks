@@ -168,8 +168,9 @@ def book(book_id):
         abort(404)
     attr = librarian.get_book_attributes(book_id)
     user = users.get_user(base["user_id"])
+    reviews = librarian.get_reviews_by_book(book_id)
 
-    return render_template("book.html", book_id=book_id, base=base, attr=attr, user=user)
+    return render_template("book.html", book_id=book_id, base=base, attr=attr, user=user, reviews=reviews)
 
 @app.route("/book/<int:book_id>/edit", methods=["GET", "POST"])
 @login_required
@@ -263,3 +264,55 @@ def profile(user_id, page=1):
         book_count=book_count
     )
 
+# === reviews ===
+
+@app.route("/book/<int:book_id>/add_review", methods=["GET", "POST"])
+@login_required
+def add_review(book_id):
+    base = librarian.get_book_by_book_id(book_id)
+    if not base:
+        abort(404)
+    review = librarian.get_review(book_id, session["user_id"])
+
+    if request.method == "GET":
+        return render_template("add_review.html", book_id=book_id, base=base, review=review)
+    
+    if request.method == "POST":
+        check_csrf()
+        rating = request.form["rating"]
+        if int(rating) not in range(1, 6):  
+            abort(403)
+        review_title = request.form["title"]
+        if len(review_title) > 100:
+            abort(403)
+        content = request.form["content"]
+        if len(content) > 5000:
+            abort(403)
+
+        if not review:
+            librarian.add_review(book_id, session["user_id"], rating, review_title, content)
+            return redirect(url_for("book", book_id=book_id))
+        
+        for i in ["rating", "title", "content"]:
+            if review[i] != request.form[i]:
+                librarian.update_review(book_id, session["user_id"], i, request.form[i])
+
+        return redirect(url_for("book", book_id=book_id))
+
+@app.route("/book/<int:book_id>/<int:user_id>", methods=["GET", "POST"])
+def review(book_id, user_id):
+    book = librarian.get_book_by_book_id(book_id)
+    if not book:
+        abort(404)
+    review = librarian.get_review(book_id, user_id)
+    if not review:
+        abort(404)
+    review_writer = users.get_user(user_id)
+    if not review_writer:
+        abort(404)
+    
+    if request.method == "GET":
+        return render_template("review.html", book=book, review=review, writer=review_writer)
+
+    if request.method == "POST": #TODO
+        return

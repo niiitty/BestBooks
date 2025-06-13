@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Review {{ base.title }} by {{ base.author }}</title>
+</head>
+
+<body>
+  <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
+  </p>
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
+  {% endif %}
+
+  <form action="/book/{{ book_id }}/add_review" method="post">
+    <p>
+      Your rating:
+      {% for i in range(1, 6) %}
+        <label>
+          <input type="radio" name="rating" value="{{ i }}" {% if review.rating == i %}checked{% endif %}>
+          {{ i }}
+        </label>
+      {% endfor %}
+      stars
+    </p>
+    <p>
+      Your review:<br>
+      <input type="text" name="title" placeholder="enter title for review" value="{{ review.title }}" maxlength="100"/>
+    </p>
+    <p>
+      <textarea name="content" placeholder="write a review" rows="5" cols="40" maxlength="5000">{{ review.content }}</textarea>
+    </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+    <input type="submit" value="Add review">
+  </form>
+</body>
+
+</html>
