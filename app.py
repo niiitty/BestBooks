@@ -299,7 +299,7 @@ def add_review(book_id):
 
         return redirect(url_for("book", book_id=book_id))
 
-@app.route("/book/<int:book_id>/<int:user_id>", methods=["GET", "POST"])
+@app.route("/book/<int:book_id>/<int:user_id>", methods=["GET"])
 def review(book_id, user_id):
     book = librarian.get_book_by_book_id(book_id)
     if not book:
@@ -314,5 +314,21 @@ def review(book_id, user_id):
     if request.method == "GET":
         return render_template("review.html", book=book, review=review, writer=review_writer)
 
-    if request.method == "POST": #TODO
-        return
+@app.route("/book/<int:book_id>/<int:user_id>/delete", methods=["GET", "POST"])
+@login_required
+def delete_review(book_id, user_id):
+    review = librarian.get_review(book_id, user_id)
+    if not review:
+        abort(404)
+    book = librarian.get_book_by_book_id(book_id)
+    
+    if request.method == "GET":
+        return render_template("delete_review.html", review=review, book=book)
+    
+    if request.method == "POST":
+        check_csrf()
+        if "delete" in request.form:
+            librarian.delete_review(book_id, user_id)
+            return redirect(url_for("book", book_id=book_id))
+
+        return redirect(url_for("review", book_id=book_id, user_id=user_id))

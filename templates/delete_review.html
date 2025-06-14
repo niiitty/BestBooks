@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Delete your review of {{ book.title }} by {{ book.author }}?</title>
+</head>
+
+<body>
+  <h1><a href="/">BestBooks</a></h1>
+  {% if session.username %}
+  <p>
+    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
+  </p>
+  <form action="/logout">
+    <input type="submit" value="Log out" />
+  </form>
+  {% endif %}
+
+  <p>
+    Are you sure you want to delete your review of <a href="/book/{{ book.book_id }}">{{ book.title }}</a> by {{ book.author }}?
+  </p>
+  <form action="/book/{{ book.book_id }}/{{ session.user_id }}/delete" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+    <input type="submit" value="Yes" name="delete">
+    <input type="submit" value="No">
+  </form>
+
+  <p>
+    <h2>{{ review.title }}</h2>
+  </p>
+  <p>
+    <b>{{ review.rating }} stars</b>
+  </p>
+  <p>
+    {{ review.content }}
+  </p>
+</body>
+</html>

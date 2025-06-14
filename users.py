@@ -18,6 +18,6 @@ def check_login(username, password):
     return None
 
 def get_user(user_id):
-    sql = "SELECT username, join_date FROM users WHERE user_id = ?"
+    sql = "SELECT user_id, username, join_date FROM users WHERE user_id = ?"
     result = db.query(sql, [user_id])
     return result[0] if result else None

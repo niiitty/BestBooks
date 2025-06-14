@@ -16,7 +16,9 @@
   </form>
   {% endif %}
 
-  <h3>{{ book.title }}</h3>
+  <h3>
+    <a href="/book/{{ book.book_id }}">{{ book.title }}</a>
+  </h3>
   <p>
     <b>Author</b>: {{ book.author }}
   </p>
@@ -24,7 +26,20 @@
     <h2>{{ review.title }}</h2>
   </p>
   <p>
+    {% if session.user_id == writer.user_id %}
+    <a href="/book/{{ book.book_id }}/add_review">edit</a> 
+    <a href="/book/{{ book.book_id }}/{{ writer.user_id }}/delete">delete</a>
+    {% else %}
+    <a href="/profile/{{ user_id }}">{{ writer.username }}</a>
+    {% endif %}
+  </p>
+  <p>
+    {% if review.rating == 1 %}
+    <b>1 star</b>
+    {% else %}
     <b>{{ review.rating }} stars</b>
+    {% endif %}
+
   </p>
   <p>
     {{ review.content }}

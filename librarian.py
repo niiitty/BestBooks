@@ -134,21 +134,24 @@ def add_review(book_id, user_id, rating, title, content):
     db.execute(sql, [book_id, user_id, rating, title, content])
 
 def get_reviews_by_book(book_id):
-    "Returns id, user_id, username, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."
-    sql = """SELECT id, r.user_id, username, sent_at, rating, r.title 
-            FROM reviews r, books b, users u
-            WHERE b.book_id = ? AND
-            r.book_id = b.book_id AND
-            r.user_id = u.user_id 
-            """
+    """Returns a list of reviews: id, user_id, username, sent time, rating, and title."""
+    sql = """
+        SELECT r.id, r.user_id, u.username, r.sent_at, r.rating, r.title
+        FROM reviews r
+        JOIN users u ON r.user_id = u.user_id
+        WHERE r.book_id = ?
+        ORDER BY r.sent_at DESC
+    """
     return db.query(sql, [book_id])
 
 def get_reviews_by_user(user_id):
-    "Returns id, book_id, book title, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."
-    sql = """SELECT id, b.book_id, b.title, sent_at, rating, r.title
-            FROM reviews r, books b
-            WHERE user_id = ? AND r.book_id = b.book_id
-            """
+    """Returns id, book_id, book title, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."""
+    sql = """
+        SELECT r.id, b.book_id, b.title, r.sent_at, r.rating, r.title
+        FROM reviews r
+        JOIN books b ON r.book_id = b.book_id
+        WHERE user_id = ?
+    """
     return db.query(sql, [user_id])
 
 def get_review(book_id, user_id):
@@ -162,3 +165,7 @@ def update_review(book_id, user_id, key, value):
         raise ValueError
     sql = f"UPDATE reviews SET {key} = ? WHERE book_id = ? AND user_id = ?"
     db.execute(sql, [value, book_id, user_id])
+
+def delete_review(book_id, user_id):
+    sql = "DELETE FROM reviews WHERE book_id = ? AND user_id = ?"
+    db.execute(sql, [book_id, user_id])

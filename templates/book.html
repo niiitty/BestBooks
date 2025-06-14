@@ -28,12 +28,13 @@
   <i>Book added by: <a href="/profile/{{ base.user_id }}">{{ user.username }}</a></i>
   {% endif %}
   
+  <p>
   {% if session.username %}
   <form action="/book/{{ book_id }}/add_review">
     <input type="submit" value="Add review">
   </form>
   {% endif %}
-
+  </p>
   <p>
     <b>Author</b>: {{ base.author }}
   </p>
@@ -72,7 +73,7 @@
 
         {% if session.user_id == review.user_id %}
         <a href="/book/{{ book_id }}/add_review">edit</a> 
-        <a href="/book/{{ book_id }}/review/{{ review.id }}/delete">delete</a>
+        <a href="/book/{{ book_id }}/{{ review.user_id }}/delete">delete</a>
         {% endif %}
 
         <i>sent at</i> {{ review.sent_at }}
