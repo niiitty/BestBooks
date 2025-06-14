@@ -29,11 +29,11 @@
   {% endif %}
   
   <p>
-  {% if session.username %}
-  <form action="/book/{{ book_id }}/add_review">
-    <input type="submit" value="Add review">
-  </form>
-  {% endif %}
+    {% if session.username %}
+    <form action="/book/{{ book_id }}/add_review">
+      <input type="submit" value="Add review">
+    </form>
+    {% endif %}
   </p>
   <p>
     <b>Author</b>: {{ base.author }}
@@ -58,6 +58,20 @@
   </p>
 
   <p>
+    {% if stats.review_count %}
+      {% if stats.review_count == 1 %}
+      1 rating,
+      {% else %}
+      {{ stats.review_count }} ratings, 
+      {% endif %}
+    Average rating:
+    {{ stats.average_rating}} stars
+    {% else %}
+    <i>no ratings</i>
+    {% endif %}
+  </p>
+
+  <p>
     <h3><u>User reviews:</u></h3>
     {% if reviews %}
       {% for review in reviews %}
@@ -77,7 +91,7 @@
         {% endif %}
 
         <i>sent at</i> {{ review.sent_at }}
-      <hr>
+        <hr>
       </h4>
       {% endfor %}
     {% else %}

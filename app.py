@@ -169,8 +169,9 @@ def book(book_id):
     attr = librarian.get_book_attributes(book_id)
     user = users.get_user(base["user_id"])
     reviews = librarian.get_reviews_by_book(book_id)
+    stats = librarian.get_review_stats(book_id)
 
-    return render_template("book.html", book_id=book_id, base=base, attr=attr, user=user, reviews=reviews)
+    return render_template("book.html", book_id=book_id, base=base, attr=attr, user=user, reviews=reviews, stats=stats)
 
 @app.route("/book/<int:book_id>/edit", methods=["GET", "POST"])
 @login_required

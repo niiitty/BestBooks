@@ -12,14 +12,14 @@ genres = sorted([
 ])
 
 def get_similar_titles(query: str) -> list[Row]:
-    "Searches for books in the database with similar titles."
+    """Searches for books in the database with similar titles."""
     tokens = query.strip().split()
     pattern_clauses = ["title LIKE ?"] * len(tokens)
     values = [f"%{token}%" for token in tokens]
 
     sql = f"""
-    SELECT book_id, title FROM books
-    WHERE {" OR ".join(pattern_clauses)}
+        SELECT book_id, title FROM books
+        WHERE {" OR ".join(pattern_clauses)}
     """
     return db.query(sql, values)
 
@@ -33,12 +33,13 @@ def add_attribute(book_id, key, value):
     db.execute(sql, (book_id, key, value))
 
 def get_book_attributes(book_id: int) -> dict[Row, list]:
-    "Returns dictionary of key-value pairs of a book's attributes."
+    """Returns dictionary of key-value pairs of a book's attributes."""
 
-    sql = """SELECT attribute_key AS key, attribute_value AS value
-            FROM book_attributes
-            WHERE book_id = ?
-        """
+    sql = """
+        SELECT attribute_key AS key, attribute_value AS value
+        FROM book_attributes
+        WHERE book_id = ?
+    """
     query = db.query(sql, [book_id])
 
     attr_dict = defaultdict(list)
@@ -53,31 +54,35 @@ def get_book_attributes(book_id: int) -> dict[Row, list]:
     return attr_dict
 
 def get_books(page, page_size):
-    sql = """SELECT book_id, title, author FROM books 
-            GROUP BY book_id
-            ORDER BY book_id DESC
-            LIMIT ? OFFSET ?"""
+    sql = """
+        SELECT book_id, title, author FROM books 
+        GROUP BY book_id
+        ORDER BY book_id DESC
+        LIMIT ? OFFSET ?
+    """
     limit = page_size
     offset = (page - 1) * page_size
     return db.query(sql, [limit, offset])
 
 #TODO bug with same titles
 def get_books_by_title(title: str) -> list[Row]:
-    "Returns book_id, title, author of (multiple) books with the exact title."
+    """Returns book_id, title, author of (multiple) books with the exact title."""
     sql = "SELECT book_id, title, author FROM books WHERE title = ?"
     return db.query(sql, [title])
 
 def get_book_by_book_id(book_id: int) -> Row:
-    "Returns user_id, book_id, title, author of a specific book."
+    """Returns user_id, book_id, title, author of a specific book."""
     sql = "SELECT user_id, book_id, title, author FROM books WHERE book_id = ?"
     result = db.query(sql, [book_id])
     return result[0] if result else None
 
 def get_books_by_user_id(user_id: int, page, page_size) -> Row:
-    "Returns book_id, title, author of (multiple) books associated with a certain user."
-    sql = """SELECT book_id, title, author FROM books 
-            WHERE user_id = ?
-            LIMIT ? OFFSET ?"""
+    """Returns book_id, title, author of (multiple) books associated with a certain user."""
+    sql = """
+        SELECT book_id, title, author FROM books 
+        WHERE user_id = ?
+        LIMIT ? OFFSET ?
+    """
     
     limit = page_size
     offset = (page - 1) * page_size
@@ -144,6 +149,16 @@ def get_reviews_by_book(book_id):
     """
     return db.query(sql, [book_id])
 
+def get_review_stats(book_id):
+    """Returns total number of reviews and average rating for a book."""
+    sql = """
+        SELECT COUNT(id) AS review_count, ROUND(AVG(rating), 2) AS average_rating
+        FROM reviews
+        WHERE book_id = ?
+    """
+    result = db.query(sql, [book_id])
+    return result[0] if result else None
+
 def get_reviews_by_user(user_id):
     """Returns id, book_id, book title, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."""
     sql = """
@@ -155,7 +170,7 @@ def get_reviews_by_user(user_id):
     return db.query(sql, [user_id])
 
 def get_review(book_id, user_id):
-    "Returns rating, title, content of review."
+    """Returns rating, title, content of review."""
     sql = "SELECT rating, title, content FROM reviews WHERE book_id = ? AND user_id = ?"
     result = db.query(sql, [book_id, user_id])
     return result[0] if result else None
