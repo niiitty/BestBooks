@@ -80,14 +80,14 @@
         {{ review.rating }} stars.
 
         {% if review.title %}
-        <a href="/book/{{ book_id }}/{{ review.user_id }}">{{ review.title }}</a>
+        <a href="/book/{{ book_id }}/review/{{ review.user_id }}">{{ review.title }}</a>
         {% else %}
         <i>No review.</i>
         {% endif %}
 
         {% if session.user_id == review.user_id %}
         <a href="/book/{{ book_id }}/add_review">edit</a> 
-        <a href="/book/{{ book_id }}/{{ review.user_id }}/delete">delete</a>
+        <a href="/book/{{ book_id }}/review/{{ review.user_id }}/delete">delete</a>
         {% endif %}
 
         <i>sent at</i> {{ review.sent_at }}
@@ -98,6 +98,12 @@
     <i>This book has no reviews yet.</i>
     {% endif %}
   </p>
+  <p>
+    <a href="/book/{{ book_id }}/{{ page - 1 }}">&lt;&lt;</a>
+    Page {{ page }}/{{ page_count }}
+    <a href="/book/{{ book_id }}/{{ page + 1 }}">&gt;&gt;</a>
+  </p>
+  <hr />
 </body>
 
 </html>

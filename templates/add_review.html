@@ -16,6 +16,14 @@
   </form>
   {% endif %}
 
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   <form action="/book/{{ book_id }}/add_review" method="post">
     <p>
       Your rating:

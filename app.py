@@ -162,16 +162,38 @@ def search():
     return render_template("search.html", query=query, suggestions=suggestions)
 
 @app.route("/book/<int:book_id>", methods=["GET", "POST"])
-def book(book_id):
+@app.route("/book/<int:book_id>/<int:page>")
+def book(book_id, page=1):
     base = librarian.get_book_by_book_id(book_id)
     if not base:
         abort(404)
     attr = librarian.get_book_attributes(book_id)
     user = users.get_user(base["user_id"])
-    reviews = librarian.get_reviews_by_book(book_id)
     stats = librarian.get_review_stats(book_id)
+    
+    page_size = 10
+    book_count = librarian.get_review_stats(book_id)["review_count"]
+    page_count = math.ceil(book_count / page_size)
+    page_count = max(page_count, 1)
 
-    return render_template("book.html", book_id=book_id, base=base, attr=attr, user=user, reviews=reviews, stats=stats)
+    if page < 1:
+        return redirect(url_for("book", book_id=book_id, page=1))
+    if page > page_count:
+        return redirect(url_for("book", book_id=book_id, page=page_count))
+
+    reviews = librarian.get_reviews_by_book(book_id, page, page_size)
+
+    return render_template(
+        "book.html",
+        book_id=book_id,
+        base=base,
+        attr=attr,
+        user=user,
+        reviews=reviews,
+        stats=stats,
+        page=page,
+        page_count=page_count
+    )
 
 @app.route("/book/<int:book_id>/edit", methods=["GET", "POST"])
 @login_required
@@ -290,6 +312,10 @@ def add_review(book_id):
         if len(content) > 5000:
             abort(403)
 
+        if content and not review_title:
+            flash("Please enter a title for your review.")
+            return redirect(url_for("add_review", book_id=book_id))
+
         if not review:
             librarian.add_review(book_id, session["user_id"], rating, review_title, content)
             return redirect(url_for("book", book_id=book_id))
@@ -300,7 +326,7 @@ def add_review(book_id):
 
         return redirect(url_for("book", book_id=book_id))
 
-@app.route("/book/<int:book_id>/<int:user_id>", methods=["GET"])
+@app.route("/book/<int:book_id>/review/<int:user_id>", methods=["GET"])
 def review(book_id, user_id):
     book = librarian.get_book_by_book_id(book_id)
     if not book:
@@ -315,7 +341,7 @@ def review(book_id, user_id):
     if request.method == "GET":
         return render_template("review.html", book=book, review=review, writer=review_writer)
 
-@app.route("/book/<int:book_id>/<int:user_id>/delete", methods=["GET", "POST"])
+@app.route("/book/<int:book_id>/review/<int:user_id>/delete", methods=["GET", "POST"])
 @login_required
 def delete_review(book_id, user_id):
     review = librarian.get_review(book_id, user_id)

@@ -28,7 +28,7 @@
   <p>
     {% if session.user_id == writer.user_id %}
     <a href="/book/{{ book.book_id }}/add_review">edit</a> 
-    <a href="/book/{{ book.book_id }}/{{ writer.user_id }}/delete">delete</a>
+    <a href="/book/{{ book.book_id }}/review/{{ writer.user_id }}/delete">delete</a>
     {% else %}
     <a href="/profile/{{ user_id }}">{{ writer.username }}</a>
     {% endif %}

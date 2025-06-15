@@ -138,16 +138,20 @@ def add_review(book_id, user_id, rating, title, content):
     sql = "INSERT INTO reviews (book_id, user_id, sent_at, rating, title, content) VALUES (?, ?, datetime('now'), ?, ?, ?)"
     db.execute(sql, [book_id, user_id, rating, title, content])
 
-def get_reviews_by_book(book_id):
+def get_reviews_by_book(book_id, page, page_size):
     """Returns a list of reviews: id, user_id, username, sent time, rating, and title."""
     sql = """
         SELECT r.id, r.user_id, u.username, r.sent_at, r.rating, r.title
         FROM reviews r
         JOIN users u ON r.user_id = u.user_id
         WHERE r.book_id = ?
-        ORDER BY r.sent_at DESC
+        GROUP BY r.id
+        ORDER BY r.id DESC
+        LIMIT ? OFFSET ?
     """
-    return db.query(sql, [book_id])
+    limit = page_size
+    offset = (page - 1) * page_size
+    return db.query(sql, [book_id, limit, offset])
 
 def get_review_stats(book_id):
     """Returns total number of reviews and average rating for a book."""

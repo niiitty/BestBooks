@@ -19,7 +19,7 @@
   <p>
     Are you sure you want to delete your review of <a href="/book/{{ book.book_id }}">{{ book.title }}</a> by {{ book.author }}?
   </p>
-  <form action="/book/{{ book.book_id }}/{{ session.user_id }}/delete" method="post">
+  <form action="/book/{{ book.book_id }}/review/{{ session.user_id }}/delete" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Yes" name="delete">
     <input type="submit" value="No">
