@@ -28,3 +28,5 @@ CREATE TABLE IF NOT EXISTS reviews (
     title TEXT,
     content TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_users_books ON books (user_id);
