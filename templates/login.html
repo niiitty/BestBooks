@@ -8,7 +8,8 @@
 <body>
   <h1><a href="/">BestBooks</a></h1>
 
-  <form action="/logging_in" method="post">
+  Login:
+  <form action="/login" method="post">
     <p>
       Username: <br />
       <input type="text" name="username" required value="{{ username }}"/>
@@ -18,9 +19,20 @@
       <input type="password" name="password" required/>
     </p>
     <input type="submit" value="Log in" />
+    {% if next_page %}
+    <input type="hidden" name="next_page" value="{{ next_page }}" />
+    {% else %}
+    <input type="hidden" name="next_page" value="/" />
+    {% endif %}
   </form>
-  {% if error %}
-    <p class=error><strong>Error:</strong> {{ error }}
-  {% endif %}
+  {% for message in get_flashed_messages() %}
+  <p>
+    {{ message }}
+  </p>
+  {% endfor %}
+
+  <p>
+    Don't have an account yet? <a href="/register">Register here.</a>
+  </p>
 </body>
 </html>

@@ -4,6 +4,7 @@ import users
 import config
 import math
 import secrets
+import markupsafe
 
 from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session, url_for
@@ -22,6 +23,12 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
+
 def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
@@ -29,7 +36,8 @@ def check_csrf():
 @app.route("/")
 @app.route("/<int:page>")
 def index(page=1):
-    page_size = 10
+    # TODO maybe use a function for the pages since it's used multiple times
+    page_size = 10 
     book_count = librarian.book_count()
     page_count = math.ceil(book_count / page_size)
     page_count = max(page_count, 1)
@@ -44,105 +52,112 @@ def index(page=1):
 
 # === account creation and logging in/out ===
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return render_template("register.html")
+    if request.method == "GET":
+        return render_template("register.html")
 
-@app.route("/create_account", methods=["POST"])
-def create_account():
-    error = None
-    username = request.form["username"]
-    if not username or not 6 <= len(username) <= 50:
-        abort(403)
-    password1 = request.form["password1"]
-    password2 = request.form["password2"]
-    if password1 != password2:
-        error = "Passwords must match"
-        return render_template("register.html", error=error, username=username)
-    if not password1 or not 7 <= len(password1) <= 100:
-        abort(403)
-    try:
-        users.create_user(username, password1)
-    except sqlite3.IntegrityError:
-        error = "Username taken"
-        return render_template("register.html", error=error)
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        if not username or not 6 <= len(username) <= 30:
+            abort(403)
+        password1 = request.form["password1"].strip()
+        password2 = request.form["password2"].strip()
+        if password1 != password2:
+            flash("Passwords must match.")
+            return render_template("register.html", username=username)
+        if not password1 or not 7 <= len(password1) <= 100:
+            abort(403)
+        try:
+            users.create_user(username, password1)
+        except sqlite3.IntegrityError:
+            flash("Username taken.")
+            return render_template("register.html")
 
-    flash("Account created")
-    return redirect(url_for("index"))
-
-@app.route("/login")
-def login():
-    return render_template("login.html")
-
-@app.route("/logging_in", methods=["POST"])
-def logging_in():
-    error = None
-    username = request.form["username"]
-    password = request.form["password"]
-
-    try:
-        user_id = users.check_login(username, password)
-    except IndexError:
-        error = "User does not exist"
-        return render_template("login.html", error=error)
-
-    if user_id:
-        session["user_id"] = user_id
-        session["csrf_token"] = secrets.token_hex(16)
-        session["username"] = username
-        flash("Successfully logged in")
+        flash("Account created")
         return redirect(url_for("index"))
-    
-    error = "Username or password incorrect"
-    return render_template("login.html", error=error, username=username)
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html", next_page=request.referrer)
+
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        password = request.form["password"].strip()
+        next_page = request.form["next_page"]
+
+        try:
+            user_id = users.check_login(username, password)
+        except IndexError:
+            flash("User does not exist.")
+            return render_template("login.html")
+
+        if user_id:
+            session["user_id"] = user_id
+            session["csrf_token"] = secrets.token_hex(16)
+            session["username"] = username
+            flash("Successfully logged in")
+            return redirect(next_page)
+        
+        flash("Username or password incorrect.")
+        return render_template("login.html", username=username, next_page=next_page)
     
 @app.route("/logout")
 @login_required
 def logout():
     del session["user_id"]
+    del session["csrf_token"]
     del session["username"]
     flash("Successfully logged out")
     return redirect(url_for("index"))
 
 # === adding/modifying/deleting books in database ===
 
-@app.route("/add_book")
+@app.route("/add_book", methods=["GET", "POST"])
 @login_required
 def add_book():
-    return render_template("add_book.html", genres=librarian.genres)
+    if request.method == "GET":
+        return render_template("add_book.html", genres=librarian.genres, filled={})
 
-@app.route("/add_book/upload", methods=["POST"])
-@login_required
-def upload():
-    check_csrf()
-    title = request.form["title"]
-    if not title or len(title) > 100:
-        abort(403)
-    author = request.form["author"]
-    if not author or len(author) > 100:
-        abort(403)
-    publication_date = request.form.get("publication_date")
-    genres = request.form.getlist("genres")
-    user_id = session["user_id"]
+    if request.method == "POST":
+        check_csrf()
+        title = request.form["title"].strip()
+        author = request.form["author"].strip()
+        if not title or len(title) > 100:
+            flash("Enter a title.")
+            filled = {"author": author}
+            return render_template("add_book.html", genres=librarian.genres, filled=filled)
+        if not author or len(author) > 100:
+            flash("Enter an author.")
+            filled = {"title": title}
+            return render_template("add_book.html", genres=librarian.genres, filled=filled)
+        publication_date = request.form.get("publication_date")
+        genres = request.form.getlist("genres")
+        user_id = session["user_id"]
 
-    book_id = librarian.add_book(user_id, title, author)
+        book_id = librarian.add_book(user_id, title, author)
 
-    if publication_date:
-        librarian.add_attribute(book_id, "publication_date", publication_date)
-    for genre in genres:
-        if genre not in librarian.genres:
-            abort(403)
-        librarian.add_attribute(book_id, "genre", genre)
+        if publication_date:
+            librarian.add_attribute(book_id, "publication_date", publication_date)
+        for genre in genres:
+            if genre not in librarian.genres:
+                abort(403)
+            librarian.add_attribute(book_id, "genre", genre)
 
-    flash(f"\"{title}\" added to database")
-    return redirect(url_for("index"))
+        flash(f"\"{title}\" added to database")
+        return redirect(url_for("index"))
 
 @app.route("/search", methods=["GET", "POST"])
 def search():
     suggestions = []
     query = ""
     if request.method == "POST":
-        query = request.form["query"]
+        query = request.form["query"].strip()
+        if not query:
+            flash("Please enter a title for your query.")
+            return redirect(url_for("search"))
+
         exact = librarian.get_books_by_title(query)
         if exact:
             return redirect(url_for("book", book_id=exact[0]["book_id"]))
@@ -211,12 +226,15 @@ def edit_book(book_id):
     
     if request.method == "POST":
         check_csrf()
-        title = request.form["title"]
+        title = request.form["title"].strip()
+        author = request.form["author"].strip()
         if not title or len(title) > 100:
-            abort(403)
-        author = request.form["author"]
+            flash("Enter a title to edit.")
+            return render_template("edit_book.html", book=book, attr=attr, genres=librarian.genres)
         if not author or len(author) > 100:
-            abort(403)
+            flash("Enter an author to edit.")
+            return render_template("edit_book.html", book=book, attr=attr, genres=librarian.genres)
+
         publication_date = request.form.get("publication_date")
         genres = request.form.getlist("genres")
         if not set(genres).issubset(librarian.genres):
@@ -305,10 +323,10 @@ def add_review(book_id):
         rating = request.form["rating"]
         if int(rating) not in range(1, 6):  
             abort(403)
-        review_title = request.form["title"]
+        review_title = request.form["title"].strip()
         if len(review_title) > 100:
             abort(403)
-        content = request.form["content"]
+        content = request.form["content"].strip()
         if len(content) > 5000:
             abort(403)
 
@@ -350,12 +368,13 @@ def delete_review(book_id, user_id):
     book = librarian.get_book_by_book_id(book_id)
     
     if request.method == "GET":
-        return render_template("delete_review.html", review=review, book=book)
+        return render_template("delete_review.html", review=review, book=book, next_page=request.referrer)
     
     if request.method == "POST":
         check_csrf()
         if "delete" in request.form:
             librarian.delete_review(book_id, user_id)
             return redirect(url_for("book", book_id=book_id))
-
-        return redirect(url_for("review", book_id=book_id, user_id=user_id))
+        
+        next_page = request.form["next_page"]
+        return redirect(next_page)

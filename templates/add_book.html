@@ -16,14 +16,20 @@
   </form>
   {% endif %}
 
-  <form action="/add_book/upload" method="post">
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
+  <form action="/add_book" method="post">
     <p>
       Title:
-      <input type="text" name="title" required maxlength="100"/>
+      <input type="text" name="title" value="{{ filled.title }}" required maxlength="100"/>
     </p>
     <p>
       Author:
-      <input type="text" name="author" required maxlength="100"/>
+      <input type="text" name="author" value="{{ filled.author }}" required maxlength="100"/>
     </p>
     <p>
       Publication date:

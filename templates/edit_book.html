@@ -16,6 +16,12 @@
   </form>
   {% endif %}
 
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
   <h2>{{ book.title }}</h2>
 
   <form action="/book/{{ book.book_id }}/edit" method="post">
