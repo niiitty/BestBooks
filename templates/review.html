@@ -30,7 +30,7 @@
     <a href="/book/{{ book.book_id }}/add_review">edit</a> 
     <a href="/book/{{ book.book_id }}/review/{{ writer.user_id }}/delete">delete</a>
     {% else %}
-    <a href="/profile/{{ user_id }}">{{ writer.username }}</a>
+    <a href="/profile/{{ writer.user_id }}">{{ writer.username }}</a>
     {% endif %}
   </p>
   <p>
