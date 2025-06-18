@@ -24,30 +24,28 @@
 
   <form action="/add_book" method="post">
     <p>
-      Title:
-      <input type="text" name="title" value="{{ filled.title }}" required maxlength="100"/>
+      <label for="title">Title:</label>
+      <input id="title" type="text" name="title" value="{{ filled.title }}" required maxlength="100"/>
     </p>
     <p>
-      Author:
-      <input type="text" name="author" value="{{ filled.author }}" required maxlength="100"/>
+      <label for="author">Author:</label>
+      <input id="author" type="text" name="author" value="{{ filled.author }}" required maxlength="100"/>
     </p>
     <p>
-      Publication date:
-      <input type="date" name="publication_date">
+      <label for="publication_date">Publication date:</label>
+      <input id="publication_date" type="date" name="publication_date" />
     </p>
     <p>
-      Genres:
-      {% for genre in genres %}
-      <div class="genre-item">
-        <label>
-          <input type="checkbox" name="genres" value="{{ genre }}">
-          {{ genre }}
-        </label>
-      </div>
-      {% endfor %}
+      <fieldset>
+        <legend>Genres:</legend>
+        {% for genre in genres %}
+          <input id="{{ genre }}" type="checkbox" name="genres" value="{{ genre }}" />
+          <label for="{{ genre }}">{{ genre }}</label>
+        {% endfor %}
+      </fieldset>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Add to database">
+    <input type="submit" value="Add to database" />
   </form>
 </body>
 

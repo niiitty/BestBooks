@@ -22,35 +22,39 @@
   </p>
   {% endfor %}
 
-  <h2>Search for a Book</h2>
+  <h2>
+    <label for="search">Search for a Book</label>
+  </h2>
   <form action="/search" method="post">
-    <input type="search" name="query" value="{{ query }}" required>
+    <input id="search" type="search" name="query" value="{{ query }}" required>
     <input type="submit" value="Search"><br>
   </form>
 
   {% if query %}
-  <h2>Results for "{{ query }}":</h2>
+    <h2>Results for "{{ query }}":</h2>
     {% if suggestions %}
-    <p>Did you mean:</p>
-    <ul>
-      {% for book in suggestions %}
-      <li><a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a></li>
-      {% endfor %}
-    </ul>
+      <p>Did you mean:</p>
+      <ul>
+        {% for book in suggestions %}
+          <li>
+            <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
     {% else %}
-    <p>No suggestions found.</p>
+      <p>No suggestions found.</p>
     {% endif %}
   {% endif %}
 
-  {% if session.user_id %}
   <p>
+  {% if session.user_id %}
     Can't find your book? Add it to the database!
     <form action="/add_book">
       <input type="submit" value="Add to database">
     </form>
-    {% else %}
+  {% else %}
     Can't find your book? <a href="/login">Log in</a> or <a href="/register">register</a> and add it to the database!
-    {% endif %}
+  {% endif %}
   </p>
 
 </body>

@@ -26,24 +26,30 @@
 
   <form action="/book/{{ book_id }}/add_review" method="post">
     <p>
-      Your rating:
-      {% for i in range(1, 6) %}
-        <label>
-          <input type="radio" name="rating" value="{{ i }}" {% if review.rating == i %}checked{% endif %}>
-          {{ i }}
-        </label>
-      {% endfor %}
-      stars
+      <fieldset>
+        <legend>Your rating:</legend>
+        {% for i in range(1, 6) %}
+          <input type="radio" id="rating{{ i }}" name="rating" value="{{ i }}" {% if review.rating == i %}checked{% endif %} />
+          <label for="rating{{ i }}">{{ i }}</label>
+        {% endfor %}
+        stars
+      </fieldset>
     </p>
     <p>
-      Your review:<br>
-      <input type="text" name="title" placeholder="enter title for review" value="{{ review.title }}" maxlength="100"/>
-    </p>
-    <p>
-      <textarea name="content" placeholder="write a review" rows="5" cols="40" maxlength="5000">{{ review.content }}</textarea>
+      <fieldset>
+        <legend>Your review</legend>
+  
+        <label for="title">Title:</label><br />
+        <input id="title" type="text" name="title" placeholder="enter title" maxlength="100" value="{{ review.title }}" /><br /><br />
+
+        <label for="content">Review:</label><br />
+        <textarea id="content" name="content" rows="5" cols="40" maxlength="5000" placeholder="write a review">{{ review.content }}</textarea>
+        
+      </fieldset>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Add review">
+    <input type="submit" value="Add review" />
+
   </form>
 </body>
 

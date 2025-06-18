@@ -26,32 +26,25 @@
 
   <form action="/book/{{ book.book_id }}/edit" method="post">
     <p>
-      Title:
-      <input type="text" name="title" value="{{ book.title }}" required maxlength="100">
+      <label for="title">Title:</label>
+      <input id="title" type="text" name="title" value="{{ book.title }}" required maxlength="100">
     </p>
     <p>
-      Author: 
-      <input type="text" name="author" value="{{ book.author }}" required maxlength="100">
+      <label for="author">Author:</label>
+      <input id="author" type="text" name="author" value="{{ book.author }}" required maxlength="100">
     </p>
     <p>
-      Publication date:
-      <input type="date" name="publication_date" value="{{ attr.publication_date }}">
+      <label for="publication_date">Publication date:</label>
+      <input id="publication_date" type="date" name="publication_date" value="{{ attr.publication_date }}">
     </p>
     <p>
-      Genres:
-      {% for genre in genres %}
-      <div class="genre-item">
-        <label>
-          {% if genre in attr.genre %}
-          <input type="checkbox" name="genres" value="{{ genre }}" checked>
-          {{ genre }}
-          {% else %}
-          <input type="checkbox" name="genres" value="{{ genre }}">
-          {{ genre }}
-          {% endif %}
-        </label>
-      </div>
-      {% endfor %}
+      <fieldset>
+        <legend>Genres:</legend>
+        {% for genre in genres %}
+          <input id="genre" type="checkbox" name="genres" value="{{ genre }}" {% if genre in attr.genre %}checked{% endif %} />
+          <label for="genre">{{ genre }}</label>
+        {% endfor %}
+      </fieldset>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Submit">

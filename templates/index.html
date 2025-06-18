@@ -16,13 +16,11 @@
   </form>
   {% endif %}
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
 
   {% if not session.username %}
   <form action="/register">
@@ -34,11 +32,13 @@
   {% endif %}
 
   <p>
-    Search for a book:
+    <label for="query">Search for a book:</label>
     <form action="/search" method="post">
-      <input type="search" name="query" value="{{ query }}" required>
+      <input id="query" type="search" name="query" value="{{ query }}" required>
       <input type="submit" value="Search"><br>
     </form>
+  </p>
+  <p>
     <form action="/add_book">
       <input type="submit" value="Add a book into the database">
     </form>
