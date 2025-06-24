@@ -1,65 +1,70 @@
 <!doctype html>
 <html>
+<link rel="stylesheet" href="/static/main.css">
 
 <head>
   <title>BestBooks</title>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
 </head>
 
 <body>
-  <h1>BestBooks</h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
+  <header>
+    <h1>
+      <a class="logo" href="/">
+        <img src="/static/logo.svg" alt="BestBooks logo" class="logo-img">
+      </a>
+    </h1>
+  </header>
+
+
+  <nav aria-label="Main navigation">
+    <ul>
+      {% if session.username %}
+      <li>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></li>
+      <li><a href="/logout">Log out</a></li>
+      <li><a href="/add_book">Add a book</a></li>
+      {% else %}
+      <li><a href="/register">Make an account</a></li>
+      <li><a href="/login">Log in</a></li>
+      {% endif %}
+
+      <li>
+        <form class="search" action="/search" method="post">
+          <label for="query">Search for a book:</label>
+          <input id="query" type="search" name="query" value="{{ query }}" required>
+          <input type="submit" value="Search">
+        </form>
+      </li>
+
+    </ul>
+  </nav>
 
   {% for message in get_flashed_messages() %}
-  <p>
+  <p class="info">
     <b>{{ message }}</b>
   </p>
   {% endfor %}
 
-  {% if not session.username %}
-  <form action="/register">
-    <input type="submit" value="Make an account" />
-  </form>
-  <form action="/login">
-    <input type="submit" value="Log in" />
-  </form>
-  {% endif %}
-
-  <p>
-    <label for="query">Search for a book:</label>
-    <form action="/search" method="post">
-      <input id="query" type="search" name="query" value="{{ query }}" required>
-      <input type="submit" value="Search"><br>
-    </form>
-  </p>
-  <p>
-    <form action="/add_book">
-      <input type="submit" value="Add a book into the database">
-    </form>
-  </p>
 
   {% if books %}
-  Recently added books: <br>
-  <hr>
+  <p class="recently-added">Recently added books:</p>
+  <section>
     {% for book in books %}
-     <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
-     <hr>
+    <article>
+      <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
+      <hr>
+    </article>
     {% endfor %}
-  {% else %}
+  </section>
   {% endif %}
 
-  <p>
+  <p class="page">
     <a href="/{{ page - 1 }}">&lt;&lt;</a>
     Page {{ page }}/{{ page_count }}
     <a href="/{{ page + 1 }}">&gt;&gt;</a>
   </p>
-  <hr />
+
 </body>
 
 </html>

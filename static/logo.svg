@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="152.25255mm"
+   height="21.403mm"
+   viewBox="0 0 152.25255 21.403"
+   version="1.1"
+   id="svg5"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false" />
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient5491"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#0079ff;stop-opacity:1;"
+         offset="0"
+         id="stop5489" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-27.508959,-140.828)">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.175px;font-family:'Baekmuk Headline';-inkscape-font-specification:'Baekmuk Headline, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;inline-size:27.7665;fill:#00005a;fill-opacity:1;fill-rule:evenodd;stroke-width:1.065;stroke-dasharray:none"
+       x="38.802425"
+       y="143.46477"
+       id="text288"
+       transform="matrix(9.4545678,0,0,9.4545678,-340.10458,-1194.5566)"><tspan
+         x="38.802425"
+         y="143.46477"
+         id="tspan6463">BestBooks</tspan></text>
+  </g>
+</svg>
