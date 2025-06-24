@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 def create_user(username, password):
     password_hash = generate_password_hash(password)
-    sql = "INSERT INTO users (username, password_hash, join_date) VALUES (?, ?, date('now'))"
+    sql = "INSERT INTO users (username, password_hash, join_date) VALUES (?, ?, date('now', 'localtime'))"
     db.execute(sql, [username, password_hash])
 
 def check_login(username, password):

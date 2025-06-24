@@ -135,7 +135,7 @@ def book_count_of_user(user_id):
     return db.query(sql, [user_id])[0]["COUNT(book_id)"]
 
 def add_review(book_id, user_id, rating, title, content):
-    sql = "INSERT INTO reviews (book_id, user_id, sent_at, rating, title, content) VALUES (?, ?, datetime('now'), ?, ?, ?)"
+    sql = "INSERT INTO reviews (book_id, user_id, sent_at, rating, title, content) VALUES (?, ?, datetime('now', 'localtime'), ?, ?, ?)"
     db.execute(sql, [book_id, user_id, rating, title, content])
 
 def get_reviews_by_book(book_id, page, page_size):
