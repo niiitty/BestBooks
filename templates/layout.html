@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/main.css">
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+  <header>
+    <h1>
+      <a class="logo" href="/">
+        <img src="/static/logo.svg" alt="BestBooks logo" class="logo-img">
+      </a>
+    </h1>
+  </header>
+
+
+  <nav aria-label="Main navigation">
+    <ul>
+      {% if session.username %}
+      <li>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></li>
+      <li><a href="/logout">Log out</a></li>
+      <li><a href="/add_book">Add a book</a></li>
+      {% else %}
+      <li><a href="/register">Make an account</a></li>
+      <li><a href="/login">Log in</a></li>
+      {% endif %}
+
+      <li>
+        <form class="search" action="/search" method="post">
+          <label for="query">Search for a book:</label>
+          <input id="query" type="search" name="query" value="{{ query }}" required>
+          <input type="submit" value="Search">
+        </form>
+      </li>
+
+    </ul>
+  </nav>
+
+  {% for message in get_flashed_messages() %}
+  <p class="info">
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+
+</html>
