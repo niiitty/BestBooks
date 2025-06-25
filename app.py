@@ -247,10 +247,10 @@ def edit_book(book_id):
             librarian.update_author(book_id, author)
 
         if publication_date != attr.get("publication_date"):
-            librarian.update_attribute(book_id, "publication_date", publication_date)
+            librarian.update_publication_date(book_id, publication_date)
 
         if set(genres) != set(attr.get("genre", [])):
-            librarian.update_attribute(book_id, "genre", genres)
+            librarian.update_genres(book_id, genres)
 
         return redirect(url_for("book", book_id=book_id))
     

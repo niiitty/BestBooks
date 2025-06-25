@@ -96,25 +96,20 @@ def update_author(book_id, author):
     sql = "UPDATE books SET author = ? WHERE book_id = ?"
     db.execute(sql, [author, book_id])  
 
-def update_attribute(book_id, key, value):
-    if isinstance(value, list):
-        sql = "DELETE FROM book_attributes WHERE book_id = ? AND attribute_key = ?"
-        db.execute(sql, [book_id, key])
+def update_publication_date(book_id, publication_date):
+    sql = "DELETE FROM book_attributes WHERE book_id = ? AND attribute_key = 'publication_date'"
+    db.execute(sql, [book_id])
 
-        sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, ?, ?)"
-        for v in value:
-            db.execute(sql, [book_id, key, v]) 
-    else:
-        sql = "SELECT attribute_value FROM book_attributes WHERE book_id = ? AND attribute_key = ?"
-        existing = db.query(sql,[book_id, key])
+    sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, 'publication_date', ?)"
+    db.execute(sql, [book_id, publication_date])  
 
-        if existing:
-            if existing[0]["attribute_value"] != value:
-                sql = "UPDATE book_attributes SET attribute_value = ? WHERE book_id = ? AND attribute_key = ?"
-                db.execute(sql, [value, book_id, key])
-        else:
-            sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, ?, ?)"
-            db.execute(sql, [book_id, key, value])
+def update_genres(book_id, genres):
+    sql = "DELETE FROM book_attributes WHERE book_id = ? AND attribute_key = 'genre'"
+    db.execute(sql, [book_id])
+
+    for genre in genres:
+        sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, 'genre', ?)"
+        db.execute(sql, [book_id, genre])
 
 def delete_book(book_id):
     sql = "DELETE FROM reviews WHERE book_id = ?"
