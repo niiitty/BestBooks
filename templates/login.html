@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Login</title>
-</head>
+{% block title %}Login{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-
-  Login:
+  <h3>Login:</h3>
   <form action="/login" method="post">
     <p>
       <label for="username">Username:</label> <br />
@@ -18,21 +15,18 @@
       <label for="password">Password:</label> <br />
       <input id="password" type="password" name="password" required/>
     </p>
-    <input type="submit" value="Log in" />
+    <button type="submit" class="submit-button">Log in</button>
+
     {% if next_page %}
       <input type="hidden" name="next_page" value="{{ next_page }}" />
     {% else %}
       <input type="hidden" name="next_page" value="/" />
     {% endif %}
   </form>
-  {% for message in get_flashed_messages() %}
-  <p>
-    {{ message }}
-  </p>
-  {% endfor %}
 
-  <p>
+  <p class="info">
     Don't have an account yet? <a href="/register">Register here.</a>
   </p>
 </body>
-</html>
+
+{% endblock %}

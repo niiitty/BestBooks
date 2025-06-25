@@ -1,39 +1,32 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Registration</title>
-</head>
+{% block title %}Registration{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-
-  Register:
+  <h3>Register:</h3>
   <form action="/register" method="post">
     <p>
       <label for="username">Username:</label> <br />
       <input id="username" type="text" name="username" required value="{{ username }}" minlength="6" maxlength="30"/>
     </p>
-    Username must be 6-30 characters long.
+    <i>Username must be 6-30 characters long.</i>
     <p>
       <label for="password1">Password:</label> <br />
       <input id="password1" type="password" name="password1" required minlength="7" maxlength="100"/>
     </p>
-    Password must be 7-100 characters long.
+    <i>Password must be 7-100 characters long.</i>
     <p>
       <label for="password2">Re-enter Password:</label> <br />
       <input id="password2" type="password" name="password2" required minlength="7" maxlength="100"/>
     </p>
-    <input type="submit" value="Create account" />
+    <button type="submit" class="submit-button">Create account</button>
   </form>
-  {% for message in get_flashed_messages() %}
-  <p>
-    {{ message }}
-  </p>
-  {% endfor %}
 
-  <p>
+  <p class="info">
     Already have an account? <a href="/login" referrerpolicy="no-referrer">Log in here.</a>
   </p>
 </body>
-</html>
+
+{% endblock %}

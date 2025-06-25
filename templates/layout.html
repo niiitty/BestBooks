@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 
 <head>
   <title>{% block title %}{% endblock %}</title>
@@ -33,7 +33,7 @@
         <form class="search" action="/search" method="post">
           <label for="query">Search for a book:</label>
           <input id="query" type="search" name="query" value="{{ query }}" required>
-          <input type="submit" value="Search">
+          <button type="submit" class="submit-button">Search</button>
         </form>
       </li>
 

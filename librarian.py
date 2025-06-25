@@ -8,7 +8,7 @@ genres = sorted([
     "History", "Horror", "LGBTQ+", "Memoir", "Mystery", "Non-fiction",
     "Philosophy", "Poetry", "Psychology", "Romance", "Science",
     "Science Fiction", "Self-help", "Short Stories", "Thriller",
-    "Travel", "Young Adult"
+    "Travel", "Young Adult", "Sports", "Manga"
 ])
 
 def get_similar_titles(query: str) -> list[Row]:

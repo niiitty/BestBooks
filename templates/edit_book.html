@@ -1,27 +1,10 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Edit {{ book.title }} by {{ book.author }}</title>
-</head>
+{% block title %}Edit {{ book.title }} by {{ book.author }}{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
-  {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
-  {% endfor %}
-
   <h2>{{ book.title }}</h2>
 
   <form action="/book/{{ book.book_id }}/edit" method="post">
@@ -40,15 +23,19 @@
     <p>
       <fieldset>
         <legend>Genres:</legend>
+        <div class="checkbox-group">
         {% for genre in genres %}
+          <div class="checkbox-item">
           <input id="genre" type="checkbox" name="genres" value="{{ genre }}" {% if genre in attr.genre %}checked{% endif %} />
           <label for="genre">{{ genre }}</label>
+          </div>
         {% endfor %}
+        </div>
       </fieldset>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Submit">
+    <button type="submit" class="submit-button">Edit</button>
   </form>
 </body>
 
-</html>
+{% endblock %}

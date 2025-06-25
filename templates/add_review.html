@@ -1,29 +1,10 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Review {{ base.title }} by {{ base.author }}</title>
-</head>
+{% block title %}Review {{ base.title }} by {{ base.author }}{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-
   <form action="/book/{{ book_id }}/add_review" method="post">
     <p>
       <fieldset>
@@ -48,9 +29,9 @@
       </fieldset>
     </p>
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Add review" />
+    <button type="submit" class="submit-button">Add review</button>
 
   </form>
 </body>
 
-</html>
+{% endblock %}

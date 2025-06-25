@@ -7,12 +7,19 @@
 <body>
 
   {% if books %}
-  <h3>Recently added books:</h3>
-    {% for book in books %}
-      <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
-      <hr />
-    {% endfor %}
+    <h3>Recently added books:</h3>
+    <section class="book-list">
+      {% for book in books %}
+        <article class="book-card">
+          <a href="/book/{{ book.book_id }}">
+            <strong>{{ book.title }}</strong> <br>
+            <span class="book-author">{{ book.author }}</span>
+          </a>
+        </article>
+      {% endfor %}
+    </section>
   {% endif %}
+
 
   <p class="page-nav">
     <a href="/{{ page - 1 }}">&lt;&lt;</a>

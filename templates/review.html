@@ -1,34 +1,27 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ writer.username }}'s review of {{ book.title }} by {{ book.author }}</title>
-</head>
+{% block title %}{{ writer.username }}'s review of {{ book.title }} by {{ book.author }}{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
   <h3>
     <a href="/book/{{ book.book_id }}">{{ book.title }}</a>
   </h3>
   <p>
     <b>Author</b>: {{ book.author }}
   </p>
-  <p>
-    <h2>{{ review.title }}</h2>
-  </p>
+  <h2 class="review-title">{{ review.title }}</h2>
   <p>
     {% if session.user_id == writer.user_id %}
-    <a href="/book/{{ book.book_id }}/add_review">edit</a> 
-    <a href="/book/{{ book.book_id }}/review/{{ writer.user_id }}/delete">delete</a>
+    <div class="review-buttons">
+      <form action="/book/{{ book.book_id }}/add_review">
+        <button type="submit" class="submit-button">Edit</button>
+      </form>
+      <form action="/book/{{ book.book_id }}/review/{{ writer.user_id }}/delete">
+        <button type="submit" class="submit-button">Delete</button>
+      </form>
+    </div>
     {% else %}
     <a href="/profile/{{ writer.user_id }}">{{ writer.username }}</a>
     {% endif %}
@@ -41,9 +34,9 @@
     {% endif %}
 
   </p>
-  <p>
+  <p class="review-content">
     {{ review.content | show_lines }}
   </p>
 </body>
 
-</html>
+{% endblock %}

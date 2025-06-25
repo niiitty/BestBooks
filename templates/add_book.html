@@ -1,26 +1,8 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Insert book into database</title>
-</head>
+{% block title %}Add a book{% endblock %}
 
-<body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
-  {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
-  {% endfor %}
+{% block content %}
 
   <form action="/add_book" method="post">
     <p>
@@ -35,18 +17,22 @@
       <label for="publication_date">Publication date:</label>
       <input id="publication_date" type="date" name="publication_date" />
     </p>
-    <p>
-      <fieldset>
-        <legend>Genres:</legend>
+
+    <fieldset>
+      <legend>Genres:</legend>
+      <div class="checkbox-group">
         {% for genre in genres %}
-          <input id="{{ genre }}" type="checkbox" name="genres" value="{{ genre }}" />
-          <label for="{{ genre }}">{{ genre }}</label>
+          <div class="checkbox-item">
+            <input id="{{ genre }}" type="checkbox" name="genres" value="{{ genre }}">
+            <label for="{{ genre }}">{{ genre }}</label>
+          </div>
         {% endfor %}
-      </fieldset>
-    </p>
+      </div>
+    </fieldset>
+    
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Add to database" />
+    <button type="submit" class="submit-button">Add to database</button>
   </form>
 </body>
 
-</html>
+{% endblock %}

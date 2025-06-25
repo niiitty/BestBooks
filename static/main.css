@@ -63,8 +63,9 @@ nav li:not(:first-of-type) {
   color: #00005AFF;
 }
 
-h3 {
+h2, h3 {
   margin-top: 0.5em;
+  overflow-wrap: break-word;
 }
 
 .content {
@@ -76,4 +77,124 @@ h3 {
 
 .page-nav {
   text-align: center;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1.5em;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  min-width: 10em;
+}
+
+.book-buttons {
+  display: flex;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.submit-button {
+  padding: 0.5em 1em;
+  border: none;
+  background-color: #BBBBF1;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.submit-button:hover,
+.submit-button:focus {
+  background-color: #9999e0;
+}
+
+.genres ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  list-style: none;
+  padding: 0;
+  margin: 0.5em 0;
+}
+
+.genres li {
+  background-color: #BBBBF1;
+  padding: 0.3em 0.7em;
+  border-radius: 1em;
+  font-size: 0.9em;
+}
+
+.review {
+  border: 1px solid #ccc;
+  background-color: #f7f7ff;
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+}
+
+.review header {
+  font-weight: bold;
+  margin-bottom: 0.3em;
+}
+
+.review-title {
+  margin: 0.5em 0;
+}
+
+.timestamp {
+  font-size: 0.85em;
+  color: #666;
+  margin-left: 0.5em;
+}
+
+.review-buttons {
+  display: flex;
+  gap: 0.5em;
+  margin-top: 0.5em;
+}
+
+.review-content {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.book-card {
+  border: 1px solid #ccc;
+  background-color: #f7f7ff;
+  border-radius: 8px;
+  padding: 1em;
+  transition: background-color 0.2s;
+}
+
+.book-card a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  overflow-wrap: break-word;
+}
+
+.book-card:hover {
+  background-color: #e6e6fa;
+}
+
+.book-author {
+  font-size: 0.9em;
+  color: #666;
+}
+
+a:focus,
+button:focus,
+input:focus {
+  outline: 2px solid #555;
+  outline-offset: 2px;
 }

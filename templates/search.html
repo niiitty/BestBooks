@@ -1,46 +1,30 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Search for book</title>
-</head>
+{% block title %}Search for book{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
-  {% for message in get_flashed_messages() %}
-  <p>
-    {{ message }}
-  </p>
-  {% endfor %}
-
-  <h2>
-    <label for="search">Search for a Book</label>
-  </h2>
+  <h2><label for="search">Search for a Book</label></h2>
   <form action="/search" method="post">
     <input id="search" type="search" name="query" value="{{ query }}" required>
-    <input type="submit" value="Search"><br>
+    <button type="submit" class="submit-button">Search</button><br />
   </form>
 
   {% if query %}
     <h2>Results for "{{ query }}":</h2>
     {% if suggestions %}
-      <p>Did you mean:</p>
-      <ul>
+      <h3>Did you mean:</h3>
+      <section class="book-list">
         {% for book in suggestions %}
-          <li>
-            <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
-          </li>
+          <article class="book-card">
+            <a href="/book/{{ book.book_id }}">
+              <strong>{{ book.title }}</strong> <br>
+              <span class="book-author">{{ book.author }}</span>
+            </a>
+          </article>
         {% endfor %}
-      </ul>
+      </section>
     {% else %}
       <p>No suggestions found.</p>
     {% endif %}
@@ -50,7 +34,7 @@
   {% if session.user_id %}
     Can't find your book? Add it to the database!
     <form action="/add_book">
-      <input type="submit" value="Add to database">
+      <button type="submit" class="submit-button">Add to database</button>
     </form>
   {% else %}
     Can't find your book? <a href="/login">Log in</a> or <a href="/register">register</a> and add it to the database!
@@ -59,4 +43,4 @@
 
 </body>
 
-</html>
+{% endblock %}

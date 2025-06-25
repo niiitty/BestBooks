@@ -1,43 +1,39 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ base.title }} by {{ base.author }}</title>
-</head>
+{% block title %}{{ base.title }} by {{ base.author }}{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
   <h2>{{ base.title }}</h2>
+
+<!-- shows edit buttons for user who added the book -->
   {% if session.user_id == base.user_id %}
-  <form action="/book/{{ book_id }}/edit">
-    <input type="submit" value="Edit book">
-  </form>
-  <form action="/book/{{ book_id }}/delete">
-    <input type="submit" value="Remove from database">
-  </form>
+    <div class="book-buttons">
+      <form action="/book/{{ book_id }}/edit">
+        <button type="submit" class="submit-button">Edit book</button>
+      </form>
+      <form action="/book/{{ book_id }}/delete">
+        <button type="submit" class="submit-button">Remove from database</button>
+      </form>
+    </div>
   {% else %}
-  <i>Book added by: <a href="/profile/{{ base.user_id }}">{{ user.username }}</a></i>
+    <i>Book added by: <a href="/profile/{{ base.user_id }}">{{ user.username }}</a></i>
   {% endif %}
   
   <p>
     {% if session.username %}
     <form action="/book/{{ book_id }}/add_review">
-      <input type="submit" value="Add review">
+      <button type="submit" class="submit-button">Add review</button>
     </form>
     {% endif %}
   </p>
+
+ <!--author, publication date and genres--> 
   <p>
     <b>Author</b>: {{ base.author }}
   </p>
+
   <p>
     <b>Published</b>: 
     {% if attr.publication_date %}
@@ -46,17 +42,21 @@
     Unknown date
     {% endif %}
   </p>
+
   <p>
     {% if attr.genre %}
-    <b>Genres</b>:
-      {% for genre in attr.genre %}
-      <ul>
-        <li>{{ genre }}</li>
-      </ul>
-      {% endfor %}
+      <div class="genres">
+        <b>Genres:</b>
+        <ul>
+          {% for genre in attr.genre %}
+            <li>{{ genre }}</li>
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
   </p>
 
+<!--shows average stats if any-->
   <p>
     {% if stats.review_count %}
       {% if stats.review_count == 1 %}
@@ -71,39 +71,47 @@
     {% endif %}
   </p>
 
-  <p>
-    <h3><u>User reviews:</u></h3>
-    {% if reviews %}
-      {% for review in reviews %}
-      <h4>
-        <a href="/profile/{{ review.user_id }}">{{ review.username }}'s</a> rating: 
-        {{ review.rating }} stars.
+<!--list reviews-->
+  <h3><u>User reviews:</u></h3>
+  {% if reviews %}
+    {% for review in reviews %}
+      <article class="review">
+        <header>
+          <strong>
+            <a href="/profile/{{ review.user_id }}">{{ review.username }}</a>
+          </strong> rated it {{ review.rating }} stars
+          <span class="timestamp">on {{ review.sent_at }}</span>
+        </header>
 
-        {% if review.title %}
-        <a href="/book/{{ book_id }}/review/{{ review.user_id }}">{{ review.title }}</a>
-        {% else %}
-        <i>No review.</i>
-        {% endif %}
+        <p class="review-title">
+          {% if review.title %}
+            <a href="/book/{{ book_id }}/review/{{ review.user_id }}">{{ review.title }}</a>
+          {% else %}
+            <i>No review.</i>
+          {% endif %}
+        </p>
 
         {% if session.user_id == review.user_id %}
-        <a href="/book/{{ book_id }}/add_review">edit</a> 
-        <a href="/book/{{ book_id }}/review/{{ review.user_id }}/delete">delete</a>
+        <div class="review-buttons">
+          <form action="/book/{{ book_id }}/add_review">
+            <button type="submit" class="submit-button">Edit</button>
+          </form>
+          <form action="/book/{{ book_id }}/review/{{ review.user_id }}/delete">
+            <button type="submit" class="submit-button">Delete</button>
+          </form>
+        </div>
         {% endif %}
-
-        <i>sent at</i> {{ review.sent_at }}
-        <hr>
-      </h4>
-      {% endfor %}
-    {% else %}
+      </article>
+    {% endfor %}
+  {% else %}
     <i>This book has no reviews yet.</i>
-    {% endif %}
-  </p>
-  <p>
+  {% endif %}
+
+  <p class="page-nav">
     <a href="/book/{{ book_id }}/{{ page - 1 }}">&lt;&lt;</a>
     Page {{ page }}/{{ page_count }}
     <a href="/book/{{ book_id }}/{{ page + 1 }}">&gt;&gt;</a>
   </p>
-  <hr />
 </body>
 
-</html>
+{% endblock %}

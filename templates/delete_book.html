@@ -1,28 +1,18 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Delete {{ book.title }} by {{ book.author }}?</title>
-</head>
+{% block title %}Delete {{ book.title }} by {{ book.author }}{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
   <h2>{{ book.author }}: {{ book.title }}</h2>
 
   <p>Are you sure you want to delete {{ book.title }} by {{ book.author }}?</p>
   <form action="/book/{{ book.book_id }}/delete" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
-    <input type="submit" value="Yes" name="delete">
-    <input type="submit" value="No">
+    <button type="submit" class="submit-button" name="delete">Yes</button>
+    <button type="submit" class="submit-button">No</button>
   </form>
 </body>
-</html>
+
+{% endblock %}

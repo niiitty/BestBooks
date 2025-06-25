@@ -1,47 +1,41 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Profile of {{ user.username }}</title>
-</head>
+{% block title %}Profile of {{ user.username }}{% endblock %}
+
+{% block content %}
 
 <body>
-  <h1><a href="/">BestBooks</a></h1>
-  {% if session.username %}
-  <p>
-    <u>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></u>
-  </p>
-  <form action="/logout">
-    <input type="submit" value="Log out" />
-  </form>
-  {% endif %}
-
   <h2>{{ user.username }}</h2>
 
   <p>Joined at: {{ user.join_date }}</p>
 
   {% if books %}
     {% if book_count == 1 %}
-    <b>{{ user.username }} has added 1 book:</b>
+      <b>{{ user.username }} has added 1 book:</b>
     {% else %}
-    <b>{{ user.username }} has added {{ book_count }} books:</b>
+      <b>{{ user.username }} has added {{ book_count }} books:</b>
     {% endif %}
+
+    <section class="book-list">
       {% for book in books %}
-      <p>
-        <a href="/book/{{ book.book_id }}">{{ book.author }}: {{ book.title }}</a>
-        <hr>
-      </p>
+        <article class="book-card">
+          <a href="/book/{{ book.book_id }}">
+            <strong>{{ book.title }}</strong><br>
+            <span class="book-author">{{ book.author }}</span>
+          </a>
+        </article>
       {% endfor %}
+    </section>
   {% else %}
     <i>This user has not added any books yet.</i>
   {% endif %}
 
-  <p>
+
+  <p class="page-nav">
     <a href="/profile/{{ user_id }}/{{ page - 1 }}">&lt;&lt;</a>
     Page {{ page }}/{{ page_count }}
     <a href="/profile/{{ user_id }}/{{ page + 1 }}">&gt;&gt;</a>
   </p>
-  <hr />
 </body>
 
-</html>
+{% endblock %}
