@@ -22,11 +22,9 @@
   {% endif %}
   
   <p>
-    {% if session.username %}
     <form action="/book/{{ book_id }}/add_review">
       <button type="submit" class="submit-button">Add review</button>
     </form>
-    {% endif %}
   </p>
 
  <!--author, publication date and genres--> 

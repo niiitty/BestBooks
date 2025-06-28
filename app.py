@@ -74,13 +74,14 @@ def register():
             flash("Username taken.")
             return render_template("register.html")
 
-        flash("Account created")
-        return redirect(url_for("index"))
+        flash("Account created. Please log in.")
+        return redirect(url_for("login"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html", next_page=request.referrer)
+        next_page = request.args.get("next", "/")
+        return render_template("login.html", next_page=next_page)
 
     if request.method == "POST":
         username = request.form["username"].strip()
@@ -97,7 +98,7 @@ def login():
             session["user_id"] = user_id
             session["csrf_token"] = secrets.token_hex(16)
             session["username"] = username
-            flash("Successfully logged in")
+            flash("Successfully logged in.")
             return redirect(next_page)
         
         flash("Username or password incorrect.")
@@ -109,7 +110,7 @@ def logout():
     del session["user_id"]
     del session["csrf_token"]
     del session["username"]
-    flash("Successfully logged out")
+    flash("Successfully logged out.")
     return redirect(url_for("index"))
 
 # === adding/modifying/deleting books in database ===
@@ -145,7 +146,7 @@ def add_book():
                 abort(403)
             librarian.add_attribute(book_id, "genre", genre)
 
-        flash(f"\"{title}\" added to database")
+        flash(f"\"{title}\" added to database.")
         return redirect(url_for("index"))
 
 @app.route("/search", methods=["GET", "POST"])

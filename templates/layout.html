@@ -23,11 +23,12 @@
       {% if session.username %}
       <li>Logged in as: <a href="/profile/{{ session.user_id }}">{{ session.username }}</a></li>
       <li><a href="/logout">Log out</a></li>
-      <li><a href="/add_book">Add a book</a></li>
       {% else %}
       <li><a href="/register">Make an account</a></li>
       <li><a href="/login">Log in</a></li>
       {% endif %}
+
+      <li><a href="/add_book">Add a book</a></li>
 
       <li>
         <form class="search" action="/search" method="post">

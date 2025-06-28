@@ -22,10 +22,10 @@
       <legend>Genres:</legend>
       <div class="checkbox-group">
         {% for genre in genres %}
-          <div class="checkbox-item">
-            <input id="{{ genre }}" type="checkbox" name="genres" value="{{ genre }}">
-            <label for="{{ genre }}">{{ genre }}</label>
-          </div>
+        <div class="checkbox-item">
+          <input id="{{ genre }}" type="checkbox" name="genres" value="{{ genre }}">
+          <label for="{{ genre }}">{{ genre }}</label>
+        </div>
         {% endfor %}
       </div>
     </fieldset>
