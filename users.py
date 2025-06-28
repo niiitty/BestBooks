@@ -1,9 +1,12 @@
-import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import db
 
 def create_user(username, password):
     password_hash = generate_password_hash(password)
-    sql = "INSERT INTO users (username, password_hash, join_date) VALUES (?, ?, date('now', 'localtime'))"
+    sql = """
+        INSERT INTO users (username, password_hash, join_date)
+        VALUES (?, ?, date('now', 'localtime'))
+    """
     db.execute(sql, [username, password_hash])
 
 def check_login(username, password):
@@ -12,7 +15,7 @@ def check_login(username, password):
 
     if not result:
         return None
-    
+
     if check_password_hash(result[0]["password_hash"], password):
         return result[0]["user_id"]
     return None

@@ -1,8 +1,8 @@
-import db
 from collections import defaultdict
 from sqlite3 import Row
+import db
 
-genres = sorted([
+genre_list = sorted([
     "Adventure", "Biography", "Children's", "Classic", "Comedy", "Contemporary",
     "Crime", "Dystopian", "Fantasy", "Graphic Novel", "Historical Fiction",
     "History", "Horror", "LGBTQ+", "Memoir", "Mystery", "Non-fiction",
@@ -64,7 +64,6 @@ def get_books(page, page_size):
     offset = (page - 1) * page_size
     return db.query(sql, [limit, offset])
 
-#TODO bug with same titles
 def get_books_by_title(title: str) -> list[Row]:
     """Returns book_id, title, author of (multiple) books with the exact title."""
     sql = "SELECT book_id, title, author FROM books WHERE title = ?"
@@ -83,7 +82,7 @@ def get_books_by_user_id(user_id: int, page, page_size) -> Row:
         WHERE user_id = ?
         LIMIT ? OFFSET ?
     """
-    
+
     limit = page_size
     offset = (page - 1) * page_size
     return db.query(sql, [user_id, limit, offset])
@@ -94,21 +93,27 @@ def update_title(book_id, title):
 
 def update_author(book_id, author):
     sql = "UPDATE books SET author = ? WHERE book_id = ?"
-    db.execute(sql, [author, book_id])  
+    db.execute(sql, [author, book_id])
 
 def update_publication_date(book_id, publication_date):
     sql = "DELETE FROM book_attributes WHERE book_id = ? AND attribute_key = 'publication_date'"
     db.execute(sql, [book_id])
 
-    sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, 'publication_date', ?)"
-    db.execute(sql, [book_id, publication_date])  
+    sql = """
+        INSERT INTO book_attributes (book_id, attribute_key, attribute_value)
+        VALUES (?, 'publication_date', ?)
+    """
+    db.execute(sql, [book_id, publication_date])
 
 def update_genres(book_id, genres):
     sql = "DELETE FROM book_attributes WHERE book_id = ? AND attribute_key = 'genre'"
     db.execute(sql, [book_id])
 
     for genre in genres:
-        sql = "INSERT INTO book_attributes (book_id, attribute_key, attribute_value) VALUES (?, 'genre', ?)"
+        sql = """
+            INSERT INTO book_attributes (book_id, attribute_key, attribute_value)
+            VALUES (?, 'genre', ?)
+        """
         db.execute(sql, [book_id, genre])
 
 def delete_book(book_id):
@@ -117,7 +122,7 @@ def delete_book(book_id):
 
     sql = "DELETE FROM book_attributes WHERE book_id = ?"
     db.execute(sql, [book_id])
-    
+
     sql = "DELETE FROM books WHERE book_id = ?"
     db.execute(sql, [book_id])
 
@@ -130,7 +135,10 @@ def book_count_of_user(user_id):
     return db.query(sql, [user_id])[0]["COUNT(book_id)"]
 
 def add_review(book_id, user_id, rating, title, content):
-    sql = "INSERT INTO reviews (book_id, user_id, sent_at, rating, title, content) VALUES (?, ?, datetime('now', 'localtime'), ?, ?, ?)"
+    sql = """
+        INSERT INTO reviews (book_id, user_id, sent_at, rating, title, content) 
+        VALUES (?, ?, datetime('now', 'localtime'), ?, ?, ?)
+    """
     db.execute(sql, [book_id, user_id, rating, title, content])
 
 def get_reviews_by_book(book_id, page, page_size):
@@ -159,7 +167,8 @@ def get_review_stats(book_id):
     return result[0] if result else None
 
 def get_reviews_by_user(user_id):
-    """Returns id, book_id, book title, send time (YYYY-MM-DD hh:mm:ss), rating, title of (multiple) reviews."""
+    """Returns id, book_id, book title, send time (YYYY-MM-DD hh:mm:ss),
+    rating, and title of (multiple) reviews."""
     sql = """
         SELECT r.id, b.book_id, b.title, r.sent_at, r.rating, r.title
         FROM reviews r
