@@ -7,7 +7,12 @@
 <body>
   <h2>{{ book.author }}: {{ book.title }}</h2>
 
-  <p>Are you sure you want to delete {{ book.title }} by {{ book.author }}?</p>
+  <p>
+    Are you sure you want to delete 
+    <span class="book-title">{{ book.title }}</span> 
+    by 
+    <span class="book-author">{{ book.author }}</span>?
+  </p>
   <form action="/book/{{ book.book_id }}/delete" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <button type="submit" class="submit-button" name="delete">Yes</button>

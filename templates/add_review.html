@@ -6,7 +6,7 @@
 
 <body>
   <h2>{{ base.title }}</h2>
-  <div class="book-author">{{ base.author }}</div>
+  <b>Author</b>: <span class="book-author">{{ base.author }}</span>
 
   <form action="/book/{{ book_id }}/add_review" method="post">
     <p>

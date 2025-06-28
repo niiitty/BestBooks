@@ -6,7 +6,10 @@
 
 <body>
   <p>
-    Are you sure you want to delete your review of <a href="/book/{{ book.book_id }}">{{ book.title }}</a> by {{ book.author }}?
+    Are you sure you want to delete your review of 
+    <span class="book-title"><a href="/book/{{ book.book_id }}">{{ book.title }}</a></span> 
+    by 
+    <span class="book-author">{{ book.author }}</span>?
   </p>
   <form action="/book/{{ book.book_id }}/review/{{ session.user_id }}/delete" method="post">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
@@ -20,13 +23,13 @@
     {% endif %}
   </form>
 
-  <p>
+  <p class="review-title">
     <h2>{{ review.title }}</h2>
   </p>
   <p>
     <b>{{ review.rating }} stars</b>
   </p>
-  <p>
+  <p class="review-content">
     {{ review.content }}
   </p>
 </body>
