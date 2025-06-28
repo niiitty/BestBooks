@@ -11,6 +11,17 @@
     <button type="submit" class="submit-button">Search</button><br />
   </form>
 
+  <p>
+  {% if session.user_id %}
+    Can't find your book? Add it to the database!
+    <form action="/add_book">
+      <button type="submit" class="submit-button">Add to database</button>
+    </form>
+  {% else %}
+    Can't find your book? <a href="/login">Log in</a> or <a href="/register">register</a> and add it to the database!
+  {% endif %}
+  </p>
+
   {% if query %}
     <h2>Results for "{{ query }}":</h2>
     {% if suggestions %}
@@ -29,17 +40,6 @@
       <p>No suggestions found.</p>
     {% endif %}
   {% endif %}
-
-  <p>
-  {% if session.user_id %}
-    Can't find your book? Add it to the database!
-    <form action="/add_book">
-      <button type="submit" class="submit-button">Add to database</button>
-    </form>
-  {% else %}
-    Can't find your book? <a href="/login">Log in</a> or <a href="/register">register</a> and add it to the database!
-  {% endif %}
-  </p>
 
 </body>
 

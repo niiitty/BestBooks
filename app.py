@@ -10,6 +10,7 @@ from flask import Flask
 from flask import abort, flash, redirect, render_template, request, session, url_for
 from difflib import get_close_matches
 from functools import wraps
+from collections import defaultdict
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -153,6 +154,7 @@ def add_book():
 def search():
     suggestions = []
     query = ""
+
     if request.method == "POST":
         query = request.form["query"].strip()
         if not query:
@@ -160,20 +162,19 @@ def search():
             return redirect(url_for("search"))
 
         exact = librarian.get_books_by_title(query)
-        if exact:
+        if len(exact) == 1:
             return redirect(url_for("book", book_id=exact[0]["book_id"]))
-        
+
         candidates = librarian.get_similar_titles(query)
-        titles = [c["title"].lower() for c in candidates]
-        matches = get_close_matches(query.lower(), titles, n=10, cutoff=0.25)
+        # Map candidates to their lower-case title
+        titles = defaultdict(list)
+        for c in candidates:
+            titles[c["title"].lower()].append(c)
 
-        title_map = {c["title"]: c for c in candidates}
-
-        for title in matches:
-            book = title_map[title]
-            full = librarian.get_books_by_title(book["title"])
-            if full:
-                suggestions.append(full[0])
+        # Fuzzy-search
+        matches = get_close_matches(query.lower(), titles.keys(), n=10, cutoff=0.25)
+        for matched_title in matches:
+            suggestions.extend(titles[matched_title])
 
     return render_template("search.html", query=query, suggestions=suggestions)
 

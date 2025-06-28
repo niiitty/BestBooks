@@ -12,13 +12,13 @@ genres = sorted([
 ])
 
 def get_similar_titles(query: str) -> list[Row]:
-    """Searches for books in the database with similar titles."""
+    """Searches for books in the database with similar titles. Returns book_id, title, and author"""
     tokens = query.strip().split()
     pattern_clauses = ["title LIKE ?"] * len(tokens)
     values = [f"%{token}%" for token in tokens]
 
     sql = f"""
-        SELECT book_id, title FROM books
+        SELECT book_id, title, author FROM books
         WHERE {" OR ".join(pattern_clauses)}
     """
     return db.query(sql, values)
