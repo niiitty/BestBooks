@@ -321,7 +321,7 @@ def add_review(book_id):
     
     if request.method == "POST":
         check_csrf()
-        rating = request.form["rating"]
+        rating = request.form.get("rating", 0)
         if int(rating) not in range(1, 6):  
             abort(403)
         review_title = request.form["title"].strip()
@@ -333,7 +333,8 @@ def add_review(book_id):
 
         if content and not review_title:
             flash("Please enter a title for your review.")
-            return redirect(url_for("add_review", book_id=book_id))
+            review = {"rating": int(rating), "content": content}
+            return render_template("add_review.html", book_id=book_id, base=base, review=review)
 
         if not review:
             librarian.add_review(book_id, session["user_id"], rating, review_title, content)

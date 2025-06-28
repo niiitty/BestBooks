@@ -5,12 +5,15 @@
 {% block content %}
 
 <body>
+  <h2>{{ base.title }}</h2>
+  <div class="book-author">{{ base.author }}</div>
+
   <form action="/book/{{ book_id }}/add_review" method="post">
     <p>
       <fieldset>
         <legend>Your rating:</legend>
         {% for i in range(1, 6) %}
-          <input type="radio" id="rating{{ i }}" name="rating" value="{{ i }}" {% if review.rating == i %}checked{% endif %} />
+          <input type="radio" id="rating{{ i }}" name="rating" value="{{ i }}" required {% if review.rating == i %}checked{% endif %} />
           <label for="rating{{ i }}">{{ i }}</label>
         {% endfor %}
         stars
