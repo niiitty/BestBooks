@@ -1,19 +1,20 @@
 # BestBooks
-Nettisivuprojekti kurssille Tietokannat ja web-ohjelmointi.
+#### Nettisivuprojekti kurssille Tietokannat ja web-ohjelmointi.
+
+Sovelluksen tarkoitus on antaa käyttäjälle mahdollisuus jakaa lukemiaan kirjoja. Kirjoja pystyy löytämään selailemalla etusivua tai hakemalla niitä hakusanoilla. Kirjojen sivuilta voi löytyä kirjailijan lisäksi julkaisuaika sekä sen lajityypit. Kaikki käyttäjät pystyvät antamaan omat arvostelunsa ja arvosanansa kirjasta, jolloin siitä näytetään keskiarvosana.
 
 ## Ominaisuudet
-- [x] Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
-- [x] Käyttäjä pystyy lisäämään, muokkaamaan ja poistamaan kirjoja. Kirjasta löytyy perustiedot kuten nimi, julkaisuvuosi ja laji.
-- [x] Käyttäjä pystyy hakemaan kirjoja hakusanalla.
-- [x] Käyttäjä pystyy valitsemaan kirjalle yhden tai useamman luokittelun.
-- [x] Käyttäjä näkee sovellukseen lisätyt kirjat.
-- Sovelluksessa käyttäjät pystyvät lisäämään "kirjahyllyynsä" kirjoja, joita on lukenut tai haluaa lukea.
-- Käyttäjäsivu näyttää, mitä kirjoja sekä montako kirjaa käyttäjällä on hyllyyssään.
-- [x] Käyttäjä pystyy antamaan kirjalle arvostelun ja arvosanan. Kirjasta näytetään keskiarvosana sekä sen arvostelut.
+- Käyttäjä pystyy luomaan tunnuksen ja kirjautumaan sisään sovellukseen.
+- Käyttäjä pystyy lisäämään, muokkaamaan ja poistamaan kirjoja. Kirjasta löytyy perustiedot kuten nimi, kirjailija ja julkaisuaika.
+- Kirjalle pystyy valitsemaan yhden tai useamman lajityypin.
+- Käyttäjä näkee sovellukseen lisätyt kirjat etu- sekä käyttäjäsivulta.
+- Käyttäjä pystyy hakemaan kirjoja hakusanoilla.
+- Käyttäjäsivu näyttää käyttäjän lisäämät kirjat sekä lisättyjen kirjojen määrän.
+- Käyttäjä pystyy antamaan kirjalle arvostelun ja arvosanan. Kirjasta näytetään keskiarvosana sekä sen arvostelut.
 
 ## Sovelluksen asennus
 
-Asenna `flask`-kirjasto:
+Asenna `flask`-kirjasto virtuaaliympäristöön:
 
 ```
 $ pip install flask
@@ -25,7 +26,7 @@ Voit käynnistää sovelluksen näin:
 $ flask run
 ```
 
-Sovellus luo tietokannan taulut käynnistyksessä.
+Sovellus luo tarvittavat tietokannan taulut käynnistyksessä.
 
 ## Toiminta suurella tietomäärällä
 
