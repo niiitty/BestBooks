@@ -365,6 +365,9 @@ def review_page(book_id, user_id):
 @app.route("/book/<int:book_id>/review/<int:user_id>/delete", methods=["GET", "POST"])
 @login_required
 def delete_review(book_id, user_id):
+    if session["user_id"] != user_id:
+        abort(403)
+
     review = librarian.get_review(book_id, user_id)
     if not review:
         abort(404)
