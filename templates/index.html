@@ -7,17 +7,24 @@
 <body>
 
   {% if books %}
-    <h3>Recently added books:</h3>
-    <section class="book-list">
-      {% for book in books %}
-        <article class="book-card">
-          <a href="/book/{{ book.book_id }}">
-            <strong>{{ book.title }}</strong> <br>
-            <span class="book-card-author">{{ book.author }}</span>
-          </a>
-        </article>
-      {% endfor %}
-    </section>
+  <h3>Recently added books:</h3>
+  <section class="book-list">
+    {% for book in books %}
+      <article class="book-card">
+        <a href="/book/{{ book.book_id }}">
+          <strong>{{ book.title }}</strong> <br>
+          <span class="book-card-author">{{ book.author }}</span>
+        </a>
+      </article>
+    {% endfor %}
+  </section>
+  {% else %}
+  <i>This is where recently added books are shown.</i>
+    {% if session.user_id %}
+    <i>Start adding them <a href="/add_book">here</a>!</i>
+    {% else %}
+    <i>Start by <a href="/register">making an account</a> or by <a href="/login">logging in</a>.</i>
+    {% endif %}
   {% endif %}
 
 
